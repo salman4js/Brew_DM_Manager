@@ -3,12 +3,29 @@ const url = "http://localhost:3002"
 
 export async function loginUser(data, id){
     const credentials = {
-        cs : "https://179e-2409-4071-2116-4233-1873-aa15-e6c4-9010.ngrok.io",
+        cs : id,
         password: data
     }
     try{
         const result = await axios.post(`${url}/loginuser`, credentials);
         return result;
+    } catch(err){
+        if(err.response && err.response.status){
+            return err.response;
+        }
+    }
+}
+
+// Get Tree Data!
+export async function getData(id, path){
+    // Make Up the ID!
+    const URL = "https://" + id + ".ngrok.io";
+    try{
+        const data = {
+            folder: path
+        }
+        const result = await axios.get("http://localhost:3200/folders", data);
+        console.log(result);
     } catch(err){
         if(err.response && err.response.status){
             return err.response;

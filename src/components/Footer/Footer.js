@@ -1,10 +1,13 @@
 import React, { useRef, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 
 const Footer = (props) => {
 
     // Defining navigate instance
     let navigate = useNavigate();
+
+    // ID instance!
+    const {id} = useParams();
 
     // Location instance!
     const location = useLocation();
@@ -16,7 +19,7 @@ const Footer = (props) => {
 
     // Path Navigation!
     function navigatePath() {
-        navigate("/:auth/main", { replace: true })
+        navigate(`/${id}/main`, { replace: true })
     }
 
     // Constructor
