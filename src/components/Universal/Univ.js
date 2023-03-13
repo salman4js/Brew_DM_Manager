@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Sidebar from '../Main/SideBar/Sidebar'
 import Explorer from '../Main/Explorer/Explorer'
 import Header from '../Main/Header/Header'
 
 // Importing Side Panel data!
 import { root } from '../Main/root/root';
+import { getData } from '../../Controller/Requests/Function';
 
 // Importing storage functions!
 import { getStorage, setStorage } from '../../Controller/Storage';
@@ -29,6 +30,11 @@ const Univ = (props) => {
         console.log("Crumb Selection triggered", data);
     }
 
+    // Get the side tree data before the page renders!
+    useEffect(() => {
+        getData(props.id, "content");
+    }, [])
+
 
     if(props.footerHeight !== undefined){
         return (
@@ -44,7 +50,7 @@ const Univ = (props) => {
         )
     } else {
         return(
-            <Spinner />
+            <Spinner width = "120px" height = "120px" />
         )
     }
 
