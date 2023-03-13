@@ -19,13 +19,13 @@ export async function loginUser(data, id){
 // Get Tree Data!
 export async function getData(id, path){
     // Make Up the ID!
-    const URL = "https://" + id + ".ngrok.io";
+    //const URL = "https://" + id + ".ngrok.io";
     try{
         const data = {
             folder: path
         }
-        const result = await axios.get("http://localhost:3200/folders", data);
-        console.log(result);
+        const result = await axios.post("http://localhost:3200/folders", data);
+        return result;
     } catch(err){
         if(err.response && err.response.status){
             return err.response;
