@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import './App.css';
 import Home from './components/Home/Home';
-
-import { setStorage } from './Controller/Storage';
-import { root } from './components/Main/root/root';
-
+import { defaultStorage, setStorage } from './Controller/Storage';
 
 function App() {
 
   // Mandatory Default Data!
   function stateValue() {
-    const data = [];
-    setStorage(root.breadCrumb, JSON.stringify(data));
+
+    // Root Data!
+    const options = [];
+    const content = 'content';
+
+    // Data
+    const data = {
+      "Crumb" : JSON.stringify(options),
+      'content' : content
+    }
+
+    // Assign mandatory in a single shot!
+    defaultStorage(data);
   }
 
   // Constructor!
