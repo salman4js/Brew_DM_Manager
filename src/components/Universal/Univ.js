@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from '../Main/SideBar/Sidebar'
 import Explorer from '../Main/Explorer/Explorer'
 import Header from '../Main/Header/Header';
@@ -24,6 +24,9 @@ const Univ = (props) => {
     // Cabinets & Explorer state handler!
     const [cabinet, setCabinet] = useState([]);
     const [explorer, setExplorer] = useState([]);
+
+    // State to prevent the useEffect from been called twice
+    const isMountedRef = useRef(false);
 
     // Loader state handler!
     const [loader, setLoader] = useState(false);
@@ -51,7 +54,6 @@ const Univ = (props) => {
 
     // Side Bar File Selection Handler!
     function handleSelect(data) {
-
         // Check the curernt path of the content!
         var currentPath = content.split("/");
 
@@ -80,17 +82,9 @@ const Univ = (props) => {
 
             // Update the crumbs data only when the selected values are not from the cabinets data!
             // Crumb data which needs to be modified later : TODO
-            setCrumb((opt => {
-                if (cabinet.includes(data)) {
-                    const updatedOptions = [data]; // Used array data type, cause we store this in the local storage with JSON.stringify usage!
-                    setStorage(root.breadCrumb, JSON.stringify(updatedOptions));
-                    return updatedOptions;
-                } else {
-                    const updatedOptions = [...opt, data];
-                    setStorage(root.breadCrumb, JSON.stringify(updatedOptions));
-                    return updatedOptions;
-                }
-            }));
+            if(cabinet.includes(data)){
+                updateCrumb(data); // Have a check once!
+            }
         }
     }
 
@@ -106,10 +100,26 @@ const Univ = (props) => {
         if (result.status === 200) {
             setExplorer(result.data.message);
             setLoader(false);
+
         } else {
             console.error(result.data.message);
             setLoader(false);
         }
+    }
+
+    // Update Crumb on onRender!
+    function updateCrumb(data){
+        setCrumb((opt => {
+            if (cabinet.includes(data)) {
+                const updatedOptions = [data]; // Used array data type, cause we store this in the local storage with JSON.stringify usage!
+                setStorage(root.breadCrumb, JSON.stringify(updatedOptions));
+                return updatedOptions;
+            } else {
+                const updatedOptions = [...opt, data];
+                setStorage(root.breadCrumb, JSON.stringify(updatedOptions));
+                return updatedOptions;
+            }
+        }));
     }
 
     // Get Cabinet Data
@@ -203,11 +213,13 @@ const Univ = (props) => {
             <InputBox placeholder = {placeholder} className = {className} onChange = {(data) => setModalInput(data)} />
         )
     }
-
+    
     // Get the side tree data before the page renders!
     useEffect(() => {
         getCabinetData(props.id, getStorage(root.content));
-    }, [])
+        // getExplorerData(props.id, "content/Home");
+        // updateCrumb("Home");
+    }, [props.id])
 
 
     if (props.footerHeight !== undefined && loader === false) {
