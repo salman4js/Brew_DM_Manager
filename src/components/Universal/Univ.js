@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../Main/SideBar/Sidebar'
 import Explorer from '../Main/Explorer/Explorer'
-import Header from '../Main/Header/Header'
+import Header from '../Main/Header/Header';
+import PanelView from '../modal.panel/modal.panel.header.view';
+import InputBox from '../modal.panel/modal.textfield.view/modal.textfield.view';
 
 // Importing Side Panel data!
 import { root } from '../Main/root/root';
-import { getData, uploadFile } from '../../Controller/Requests/Function';
+import { getData, uploadFile, createFolder } from '../../Controller/Requests/Function';
 
 // Importing storage functions!
 import { getStorage, setStorage } from '../../Controller/Storage';
@@ -25,6 +27,24 @@ const Univ = (props) => {
 
     // Loader state handler!
     const [loader, setLoader] = useState(false);
+
+    // Modal State handler!
+    const [modal, setModal] = useState({
+        show: false,
+        header: undefined,
+        body: false,
+        bodyText: undefined,
+        footer: false,
+        footerAttr: {
+            variant1: "secondary",
+            variant2: "primary",
+            btnText1: "Cancel",
+            btnText2: "OK"
+        },
+        onHide : function(){
+            closeModal()
+        } 
+    })
 
     // Side Bar File Selection Handler!
     function handleSelect(data) {
@@ -105,9 +125,57 @@ const Univ = (props) => {
     // Upload the file to the server
     async function handleUpload(data){
         setLoader(true);
-        const result = await uploadFile(data, content, props.id);
-        console.log(result)
+        const result = await uploadFile(data, content, props.id); // Have a modal to let the user know that the file has been uploaded!
         setLoader(false);
+    }
+
+    // Handle Crumbs Dropdown action!
+    async function handleAction(data){
+        switch(data){
+            case "New Folder":
+                const _modalData = {
+                    header: "Folder Creation",
+                    footer: true,
+                    show: true,
+                    body: true,
+                }
+                populateModal(_modalData);
+                // await createFolder(content, props.id);
+                break;
+            case "Properties": 
+                console.log("Hey hey switch!")
+                break;
+        }
+    }
+
+    // Open and Close Modal
+    function populateModal(_modalData){
+        setModal({
+            ...modal,
+            header: _modalData.header,
+            footer: _modalData.footer,
+            show: _modalData.show,
+            body: _modalData.body
+        })
+    }
+
+    function closeModal(){
+        setModal({
+            ...modal,
+            show: false,
+            show: undefined,
+            header: undefined,
+            body: undefined,
+            bodyText: undefined,
+            footer: undefined,
+        })
+    }
+
+    // Input Box for the modal to handle the folder creation data
+    function Input(placeholder, className){
+        return(
+            <InputBox placeholder = {placeholder} className = {className} onChange = {(data) => console.log(data)} />
+        )
     }
 
     // Get the side tree data before the page renders!
@@ -119,8 +187,21 @@ const Univ = (props) => {
     if (props.footerHeight !== undefined && loader === false) {
         return (
             <div>
+                {
+                    modal ? (
+                        <PanelView onHide = {modal.onHide} show = {modal.show} header = {modal.header} body = {modal.body}
+                        footer = {modal.footer} footerAttr = {modal.footerAttr}
+                        bodyText = {Input("Enter your folder name", "form-control")}
+                        />
+                    ) : (
+                        null
+                    )
+                }
                 <div className="universal">
-                    <Header root={root.prop} crumbData={crumb} crumbSelection={(data) => crumbSelection(data)} uploadFile = {(data) => handleUpload(data)} />
+                    <Header root={root.prop} crumbData={crumb} crumbSelection={(data) => crumbSelection(data)} 
+                    uploadFile = {(data) => handleUpload(data)}
+                    action = {(data) => handleAction(data)}
+                    />
                     <div className="main-container">
                         <Sidebar height={props.windowHeight - props.footerHeight} root={cabinet} handleSelect={(data) => handleSelect(data)} />
                         <Explorer height={props.windowHeight - props.footerHeight} explorer={explorer} />

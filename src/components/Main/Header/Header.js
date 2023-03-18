@@ -8,7 +8,7 @@ const Header = (props) => {
             <div className="header-grid-container">
                 <Control />
                 <Crumbs actions = {props.root} crumb = {props.crumbData} crumbSelection = {(data) => props.crumbSelection(data)}
-                    uploadFile = {(data) => props.uploadFile(data)}
+                    uploadFile = {(data) => props.uploadFile(data)} action = {(data) => props.action(data) }
                 />
             </div>
         </div>
