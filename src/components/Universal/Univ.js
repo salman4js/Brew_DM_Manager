@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../Main/SideBar/Sidebar'
 import Explorer from '../Main/Explorer/Explorer'
 import Header from '../Main/Header/Header'
@@ -29,20 +29,39 @@ const Univ = (props) => {
     // Side Bar File Selection Handler!
     function handleSelect(data) {
 
-        // Content state update to get the valid data from the content server!
-       setContent((options) => {
-        const updateValue = options.concat("/"+data);
-        // Get the data from the content server!
-        getExplorerData(props.id, updateValue);
-        return updateValue;
-       })
+        // Check the curernt path of the content!
+        var currentPath = content.split("/");
 
-        // Crumb data which needs to be modified later : TODO
-        // setCrumb((opt => {
-        //     const updatedOptions = [...opt, data];
-        //     setStorage(root.breadCrumb, JSON.stringify(updatedOptions));
-        //     return updatedOptions;
-        // }));
+        if (currentPath[1] === data) {
+            return;
+        } else {
+            // Content state update to get the valid data from the content server!
+            setContent((options) => {
+                if(options.indexOf("/") > -1){
+                    if(cabinet.includes(data)){
+                        const cabinetValue = data;
+                        const updateValue = options.replace(/\/\w+$/, "/" + cabinetValue);
+                        // Get the data from the content server!
+                        getExplorerData(props.id, updateValue);
+                        return updateValue;
+                    } else {
+                        return;
+                    }
+                } else {
+                    const updateValue = options.concat("/" + data);
+                    // Get the data from the content server!
+                    getExplorerData(props.id, updateValue);
+                    return updateValue;
+                }
+            })
+
+            // Crumb data which needs to be modified later : TODO
+            setCrumb((opt => {
+                const updatedOptions = [...opt, data];
+                setStorage(root.breadCrumb, JSON.stringify(updatedOptions));
+                return updatedOptions;
+            }));
+        }
     }
 
     // Handle Crumb Selection!
@@ -51,10 +70,10 @@ const Univ = (props) => {
     }
 
     // Get explorer data!
-    async function getExplorerData(id, node){
+    async function getExplorerData(id, node) {
         setLoader(true);
         const result = await getData(id, node);
-        if(result.status === 200){
+        if (result.status === 200) {
             setExplorer(result.data.message);
             setLoader(false);
         } else {
@@ -64,10 +83,10 @@ const Univ = (props) => {
     }
 
     // Get Cabinet Data
-    async function getCabinetData(id, node){
+    async function getCabinetData(id, node) {
         setLoader(true);
         const result = await getData(id, node);
-        if(result.status === 200){
+        if (result.status === 200) {
             setCabinet(result.data.message);
             setLoader(false);
         } else {
@@ -82,21 +101,21 @@ const Univ = (props) => {
     }, [])
 
 
-    if(props.footerHeight !== undefined && loader === false){
+    if (props.footerHeight !== undefined && loader === false) {
         return (
             <div>
                 <div className="universal">
                     <Header root={root.prop} crumbData={crumb} crumbSelection={(data) => crumbSelection(data)} />
                     <div className="main-container">
                         <Sidebar height={props.windowHeight - props.footerHeight} root={cabinet} handleSelect={(data) => handleSelect(data)} />
-                        <Explorer height={props.windowHeight - props.footerHeight} explorer = {explorer} />
+                        <Explorer height={props.windowHeight - props.footerHeight} explorer={explorer} />
                     </div>
                 </div>
             </div>
         )
     } else {
-        return(
-            <Spinner width = "120px" height = "120px" />
+        return (
+            <Spinner width="120px" height="120px" />
         )
     }
 
