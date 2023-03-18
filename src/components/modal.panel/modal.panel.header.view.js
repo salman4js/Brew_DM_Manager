@@ -4,6 +4,7 @@ import PanelFooter from "./Panel/moda.panel.footer.view";
 import PanelBodyView from "./Panel/modal.panel.body.view";
 
 const PanelView = (props) => {
+
     return(
         <Modal
             show = {props.show}
@@ -17,7 +18,7 @@ const PanelView = (props) => {
             )}
             {props.footer && (
                 <PanelFooter variant1 = {props.footerAttr.variant1} variant2 = {props.footerAttr.variant2}
-                btnText1 = {props.footerAttr.btnText1} btnText2 = {props.footerAttr.btnText2}
+                btnText1 = {props.footerAttr.btnText1} btnText2 = {props.footerAttr.btnText2} onHide = {() => props.onHide()}
                 />
             )}
         </Modal>

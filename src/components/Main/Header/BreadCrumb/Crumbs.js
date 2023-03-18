@@ -46,11 +46,11 @@ const Crumbs = (props) => {
                                     <div className="btn-light text-center" style={{ padding: '5px' }} onClick={handleButtonClick}>Upload File</div>
                                 </div>
                                 {
-                                    props.actions.map((options, key) => {
+                                    props.actions.map((item, key) => {
                                         return (
                                             <div>
-                                                <div className="btn-light text-center" style={{ padding: '5px' }}>
-                                                    {options}
+                                                <div className="btn-light text-center" style={{ padding: '5px' }} onClick = {() => props.action(item) }>
+                                                    {item}
                                                 </div>
                                             </div>
                                         )
