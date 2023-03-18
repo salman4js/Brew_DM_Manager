@@ -55,11 +55,18 @@ const Univ = (props) => {
                 }
             })
 
+            // Update the crumbs data only when the selected values are not from the cabinets data!
             // Crumb data which needs to be modified later : TODO
             setCrumb((opt => {
-                const updatedOptions = [...opt, data];
-                setStorage(root.breadCrumb, JSON.stringify(updatedOptions));
-                return updatedOptions;
+                if(cabinet.includes(data)){
+                    const updatedOptions = [data]; // Used array data type, cause we store this in the local storage with JSON.stringify usage!
+                    setStorage(root.breadCrumb, JSON.stringify(updatedOptions));
+                    return updatedOptions;
+                } else {
+                    const updatedOptions = [...opt, data];
+                    setStorage(root.breadCrumb, JSON.stringify(updatedOptions));
+                    return updatedOptions;
+                }
             }));
         }
     }

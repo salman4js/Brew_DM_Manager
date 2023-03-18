@@ -259,8 +259,9 @@ body {
   color: black;
 }
 
-.explorer-data:hover{
+.explorer-cabinet-data:hover{
   background-color: #8e8f92;
+  cursor: pointer;
 }
 
 .background-default{
