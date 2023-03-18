@@ -6,7 +6,7 @@ const PanelFooter = (props) => {
     return(
         <Modal.Footer>
             <Button variant = {props.variant1} onClick = {props.onHide}>{props.btnText1}</Button>
-            <Button variant = {props.variant2}> {props.btnText2} </Button>
+            <Button variant = {props.variant2} onClick = {props.onSuccess} > {props.btnText2}</Button>
         </Modal.Footer>
     )
 }

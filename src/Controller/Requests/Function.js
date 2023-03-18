@@ -57,10 +57,16 @@ export async function uploadFile(data, path, id){
 }
 
 // Create a folder in the destination path!
-export async function createFolder(path, id){
+export async function createFolder(pathName, id){
     const URL = "https://" + id + ".ngrok.io"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
+    
+    // Create a data!
+    const data = {
+        pathName: pathName
+    }
+    
     try{
-        const result = await axios.post("http://localhost:3200/upload", path)
+        const result = await axios.post("http://localhost:3200/createfolder", data)
         return result;
     } catch(err){
         if(err.response && err.response.status){

@@ -46,6 +46,9 @@ const Univ = (props) => {
         } 
     })
 
+    // Input State Handler!
+    const [modalInput, setModalInput] = useState();
+
     // Side Bar File Selection Handler!
     function handleSelect(data) {
 
@@ -126,7 +129,13 @@ const Univ = (props) => {
     async function handleUpload(data){
         setLoader(true);
         const result = await uploadFile(data, content, props.id); // Have a modal to let the user know that the file has been uploaded!
-        setLoader(false);
+        if(result.status === 200){
+            getExplorerData(props.id, content);
+            setLoader(false);
+        } else {
+            console.error(result.data.message);
+            setLoader(false);
+        }
     }
 
     // Handle Crumbs Dropdown action!
@@ -140,7 +149,6 @@ const Univ = (props) => {
                     body: true,
                 }
                 populateModal(_modalData);
-                // await createFolder(content, props.id);
                 break;
             case "Properties": 
                 console.log("Hey hey switch!")
@@ -171,10 +179,28 @@ const Univ = (props) => {
         })
     }
 
+    // Folder Creation!
+    async function folderCreation(path, id){
+       const result =  await createFolder(path, id);
+       if(result.status === 200){
+        closeModal() // Close the modal before making the call
+        getExplorerData(id, content); // Call the getExplorer data to make the changes appear from the content server!
+       } else {
+        console.error(result.data.message);
+       }
+    }
+
+    // On Modal Success!
+    async function onModalSuccess(){
+        // Form the path with the folder name defined
+        const path = content + "/" + modalInput // Folder Name defined in the modal textarea view!
+        folderCreation(path, props.id);
+    }
+
     // Input Box for the modal to handle the folder creation data
     function Input(placeholder, className){
         return(
-            <InputBox placeholder = {placeholder} className = {className} onChange = {(data) => console.log(data)} />
+            <InputBox placeholder = {placeholder} className = {className} onChange = {(data) => setModalInput(data)} />
         )
     }
 
@@ -192,6 +218,7 @@ const Univ = (props) => {
                         <PanelView onHide = {modal.onHide} show = {modal.show} header = {modal.header} body = {modal.body}
                         footer = {modal.footer} footerAttr = {modal.footerAttr}
                         bodyText = {Input("Enter your folder name", "form-control")}
+                        onModalSuccess = {() => onModalSuccess()}
                         />
                     ) : (
                         null
