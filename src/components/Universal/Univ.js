@@ -5,7 +5,7 @@ import Header from '../Main/Header/Header'
 
 // Importing Side Panel data!
 import { root } from '../Main/root/root';
-import { getData } from '../../Controller/Requests/Function';
+import { getData, uploadFile } from '../../Controller/Requests/Function';
 
 // Importing storage functions!
 import { getStorage, setStorage } from '../../Controller/Storage';
@@ -37,8 +37,8 @@ const Univ = (props) => {
         } else {
             // Content state update to get the valid data from the content server!
             setContent((options) => {
-                if(options.indexOf("/") > -1){
-                    if(cabinet.includes(data)){
+                if (options.indexOf("/") > -1) {
+                    if (cabinet.includes(data)) {
                         const cabinetValue = data;
                         const updateValue = options.replace(/\/\w+$/, "/" + cabinetValue);
                         // Get the data from the content server!
@@ -58,7 +58,7 @@ const Univ = (props) => {
             // Update the crumbs data only when the selected values are not from the cabinets data!
             // Crumb data which needs to be modified later : TODO
             setCrumb((opt => {
-                if(cabinet.includes(data)){
+                if (cabinet.includes(data)) {
                     const updatedOptions = [data]; // Used array data type, cause we store this in the local storage with JSON.stringify usage!
                     setStorage(root.breadCrumb, JSON.stringify(updatedOptions));
                     return updatedOptions;
@@ -102,6 +102,14 @@ const Univ = (props) => {
         }
     }
 
+    // Upload the file to the server
+    async function handleUpload(data){
+        setLoader(true);
+        const result = await uploadFile(data, content, props.id);
+        console.log(result)
+        setLoader(false);
+    }
+
     // Get the side tree data before the page renders!
     useEffect(() => {
         getCabinetData(props.id, getStorage(root.content));
@@ -112,7 +120,7 @@ const Univ = (props) => {
         return (
             <div>
                 <div className="universal">
-                    <Header root={root.prop} crumbData={crumb} crumbSelection={(data) => crumbSelection(data)} />
+                    <Header root={root.prop} crumbData={crumb} crumbSelection={(data) => crumbSelection(data)} uploadFile = {(data) => handleUpload(data)} />
                     <div className="main-container">
                         <Sidebar height={props.windowHeight - props.footerHeight} root={cabinet} handleSelect={(data) => handleSelect(data)} />
                         <Explorer height={props.windowHeight - props.footerHeight} explorer={explorer} />

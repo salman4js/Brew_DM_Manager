@@ -3,15 +3,26 @@ import BreadCrumb from './src/BreadCrumb';
 
 const Crumbs = (props) => {
 
+    // Upload file handler!
+    const handleFileUpload = (event) => {
+        const file = event.target.files[0];
+        props.uploadFile(file); // Upload the file to the server!
+    };
+
+    const handleButtonClick = () => {
+        const fileInput = document.getElementById("fileInput");
+        fileInput.click();
+    };
+
     return (
         <div className="header-breadcrumb">
             <div className="header-crumb">
                 <div class="input-group input-group-sm mb-3" style={{ cursor: 'pointer' }}>
                     <span type="text" class="form-control" aria-label="Text input with dropdown button">
                         {
-                            props.crumb.map((option,key) => {
-                                return(
-                                    <BreadCrumb crumb = {option} crumbSelection = {(data) => props.crumbSelection(data)}  />
+                            props.crumb.map((option, key) => {
+                                return (
+                                    <BreadCrumb crumb={option} crumbSelection={(data) => props.crumbSelection(data)} />
                                 )
                             })
                         }
@@ -24,10 +35,24 @@ const Crumbs = (props) => {
                                 </svg>
                             </div>
                             <div class="dropdown-content">
+                                <div>
+                                    <input
+                                        type="file"
+                                        id="fileInput"
+                                        onChange={handleFileUpload}
+                                        style={{ display: "none" }}
+                                        className="form-control"
+                                    />
+                                    <div className="btn-light text-center" style={{ padding: '5px' }} onClick={handleButtonClick}>Upload File</div>
+                                </div>
                                 {
                                     props.actions.map((options, key) => {
                                         return (
-                                            <a style={{ color: "black", cursor: 'pointer' }}>{options}</a>
+                                            <div>
+                                                <div className="btn-light text-center" style={{ padding: '5px' }}>
+                                                    {options}
+                                                </div>
+                                            </div>
                                         )
                                     })
                                 }

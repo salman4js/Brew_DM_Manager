@@ -10,9 +10,11 @@ const Explorer = (props) => {
           {
               props.explorer.map((options,key) => {
                 return(
-                  <span className = "explorer-data">
-                    {options}
-                  </span>
+                  <div className = "explorer-data">
+                    <span>
+                      {options}
+                    </span>
+                  </div>
                 )
               })
             }
