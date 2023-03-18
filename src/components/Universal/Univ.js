@@ -217,8 +217,8 @@ const Univ = (props) => {
     // Get the side tree data before the page renders!
     useEffect(() => {
         getCabinetData(props.id, getStorage(root.content));
-        // getExplorerData(props.id, "content/Home");
-        // updateCrumb("Home");
+        getExplorerData(props.id, "content/Home");
+        updateCrumb("Home");
     }, [props.id])
 
 
