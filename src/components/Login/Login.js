@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 
 // Importing Functions!
 import { loginUser } from '../../Controller/Requests/Function';
+import PanelView from '../modal.panel/modal.panel.header.view';
 
 const Login = (props) => {
 
@@ -12,6 +13,32 @@ const Login = (props) => {
     // Retrieving ID
     const { id } = useParams();
 
+    // Error Handling State!
+    const [error, setError] = useState({
+        show : false,
+        header: undefined,
+        body: false,
+        bodyText: undefined,
+        footer: false,
+        footerAttr: {
+            variant1: "secondary",
+            variant2: "primary",
+            btnText1: "Cancel",
+            btnText2: "OK"
+        },
+        onHide : function(){
+            changeErrorState();
+        } 
+    })
+
+    // Change Error State!
+    function changeErrorState(){
+        setError({
+            ...error,
+            show: false
+        })
+    }
+
     // Login Key Event Handler!
     async function handleLogin(data, id) {
         if (data.key === "Enter") {
@@ -19,13 +46,28 @@ const Login = (props) => {
            if(result.status === 200){
             navigate(`/${id}/desktop`, {replace: true});
            } else {
-            // TODO: Error Handling!
+            // Error Handling!
+            setError({
+                ...error,
+                show: !result.data.success,
+                header: "Error Logging In!",
+                body: !result.data.success,
+                bodyText: result.data.message,
+                footer: result.data.success,
+            })
            }
         }
     }
 
     return (
         <div className="container">
+            {
+                error ? (
+                    <PanelView onHide = {error.onHide} show = {error.show} header = {error.header} body = {error.body} bodyText = {error.bodyText} footer = {error.footer} footerAttr = {error.footerAttr}   />
+                ) : (
+                    null
+                )
+            }
             <div className="text-center">
                 <div className="login-section">
                     <div className="card-login-container">

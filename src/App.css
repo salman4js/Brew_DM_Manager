@@ -247,3 +247,29 @@ body {
 .dropdown:hover .dropbtn {
   background-color: #7b7d7b;
 }
+
+.explorer-cabinet-data{
+  background-color:rgb(192, 188, 188);
+  padding: 10px
+}
+
+.explorer-data{
+  margin-left: 50px;
+  margin-top: 10px;
+  color: black;
+}
+
+.explorer-data:hover{
+  background-color: #8e8f92;
+}
+
+.background-default{
+  flex-grow: 1;
+  background-color: #f1f1f1;
+}
+
+.text-handler{
+  color: black;
+  font-weight: bold;
+  font-size: large;
+}
