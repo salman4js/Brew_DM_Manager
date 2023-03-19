@@ -12,12 +12,15 @@ import { getData, uploadFile, createFolder, downloadFile } from '../../Controlle
 // Importing storage functions!
 import { getStorage, setStorage } from '../../Controller/Storage';
 import Spinner from '../Loader/Spinner';
-import Viewer from '../Viewer/Viewer';
+import DocumentViewer from '../document.viewer/document.viewer.component/document.viewer.component';
 
 const Univ = (props) => {
 
     // Side bar state handler!
     const [crumb, setCrumb] = useState(JSON.parse(getStorage(root.breadCrumb)));
+
+    // Header Height state handler!
+    const [headerHeight, setHeaderHeight] = useState("");
 
     // Content state handler!
     const [content, setContent] = useState(getStorage(root.content));
@@ -49,9 +52,9 @@ const Univ = (props) => {
             btnText1: "Cancel",
             btnText2: "OK"
         },
-        onHide : function(){
+        onHide: function () {
             closeModal()
-        } 
+        }
     })
 
     // Input State Handler!
@@ -104,12 +107,12 @@ const Univ = (props) => {
     }
 
     // substring of the data after the fisrt occurence!
-    function afterOccurence(data, value){
+    function afterOccurence(data, value) {
         return data.substring(data.indexOf(value) + 1);
     }
 
     // substring of the data before the first occurence!
-    function beforeOccurence(data, value){
+    function beforeOccurence(data, value) {
         return data.substring(0, data.indexOf(value));
     }
 
@@ -119,8 +122,8 @@ const Univ = (props) => {
     }
 
     // Check Cabinet Data
-    function checkCabinet(data){
-       return cabinetData.includes(data);
+    function checkCabinet(data) {
+        return cabinetData.includes(data);
     }
 
     // Get explorer data!
@@ -138,7 +141,7 @@ const Univ = (props) => {
     }
 
     // Update Crumb on onRender!
-    function updateCrumb(data){
+    function updateCrumb(data) {
         setCrumb((opt => {
             if (checkCabinet(data)) {
                 const updatedOptions = [data]; // Used array data type, cause we store this in the local storage with JSON.stringify usage!
@@ -158,7 +161,7 @@ const Univ = (props) => {
         const result = await getData(id, node);
         if (result.status === 200) {
             setCabinet(result.data.message);
-            result.data.message.map((options,key) => {
+            result.data.message.map((options, key) => {
                 setCabinetData(cabinetData => [...cabinetData, options.name])
             })
             setLoader(false);
@@ -169,10 +172,10 @@ const Univ = (props) => {
     }
 
     // Upload the file to the server
-    async function handleUpload(data){
+    async function handleUpload(data) {
         setLoader(true);
         const result = await uploadFile(data, content, props.id); // Have a modal to let the user know that the file has been uploaded!
-        if(result.status === 200){
+        if (result.status === 200) {
             getExplorerData(props.id, content);
             setLoader(false);
         } else {
@@ -182,8 +185,8 @@ const Univ = (props) => {
     }
 
     // Handle Crumbs Dropdown action!
-    async function handleAction(data){
-        switch(data){
+    async function handleAction(data) {
+        switch (data) {
             case "New Folder":
                 const _modalData = {
                     header: "Folder Creation",
@@ -193,13 +196,13 @@ const Univ = (props) => {
                 }
                 populateModal(_modalData);
                 break;
-            case "Properties": 
+            case "Properties":
                 break;
         }
     }
 
     // Open and Close Modal
-    function populateModal(_modalData){
+    function populateModal(_modalData) {
         setModal({
             ...modal,
             header: _modalData.header,
@@ -209,7 +212,7 @@ const Univ = (props) => {
         })
     }
 
-    function closeModal(){
+    function closeModal() {
         setModal({
             ...modal,
             show: false,
@@ -222,33 +225,33 @@ const Univ = (props) => {
     }
 
     // Folder Creation!
-    async function folderCreation(path, id){
-       const result =  await createFolder(path, id);
-       if(result.status === 200){
-        closeModal() // Close the modal before making the call
-        getExplorerData(id, content); // Call the getExplorer data to make the changes appear from the content server!
-       } else {
-        console.error(result.data.message);
-       }
+    async function folderCreation(path, id) {
+        const result = await createFolder(path, id);
+        if (result.status === 200) {
+            closeModal() // Close the modal before making the call
+            getExplorerData(id, content); // Call the getExplorer data to make the changes appear from the content server!
+        } else {
+            console.error(result.data.message);
+        }
     }
 
     // On Modal Success!
-    async function onModalSuccess(){
+    async function onModalSuccess() {
         // Form the path with the folder name defined
         const path = content + "/" + modalInput // Folder Name defined in the modal textarea view!
         folderCreation(path, props.id);
     }
 
     // Input Box for the modal to handle the folder creation data
-    function Input(placeholder, className){
-        return(
-            <InputBox placeholder = {placeholder} className = {className} onChange = {(data) => setModalInput(data)} />
+    function Input(placeholder, className) {
+        return (
+            <InputBox placeholder={placeholder} className={className} onChange={(data) => setModalInput(data)} />
         )
     }
 
     // Handle Directory for the explorer
-    async function handleDirectory(isDirectory, folderName){
-        if(isDirectory){
+    async function handleDirectory(isDirectory, folderName) {
+        if (isDirectory) {
             handleSelect(folderName);
         } else {
             // Populate the view state modal
@@ -263,12 +266,12 @@ const Univ = (props) => {
     }
 
     // Handling the file download from the server!
-    async function fileDownload(filePath){
+    async function fileDownload(filePath) {
         return await downloadFile(filePath);
     }
 
     // Open the file viewer!
-    function openViewer(modal){
+    function openViewer(modal) {
         setView({
             ...view,
             show: modal.show,
@@ -277,12 +280,12 @@ const Univ = (props) => {
     }
 
     // Render the viewer with the modal attributes!
-    function renderViewer(){
-        return(
-            <Viewer file = {view.file} />
+    function renderViewer(windowHeight, footerHeight) {
+        return (
+            <DocumentViewer file={view.file} height={windowHeight - footerHeight} />
         )
     }
-    
+
     // Get the side tree data before the page renders!
     useEffect(() => {
         getCabinetData(props.id, getStorage(root.content));
@@ -293,34 +296,35 @@ const Univ = (props) => {
     if (props.footerHeight !== undefined && loader === false) {
         return (
             <div>
-                {
-                    modal ? (
-                        <PanelView onHide = {modal.onHide} show = {modal.show} header = {modal.header} body = {modal.body}
-                        footer = {modal.footer} footerAttr = {modal.footerAttr}
-                        bodyText = {Input("Enter your folder name", "form-control")}
-                        onModalSuccess = {() => onModalSuccess()}
-                        />
-                    ) : (
-                        null
-                    )
-                }
+                {/* Render the document viewer if triggered */}
                 {
                     view.show ? (
-                        renderViewer()
+                        renderViewer(props.windowHeight, props.footerHeight) // Rendering Document View!
                     ) : (
-                        null
+                        <div className="universal">
+                            {
+                                modal ? (
+                                    <PanelView onHide={modal.onHide} show={modal.show} header={modal.header} body={modal.body}
+                                        footer={modal.footer} footerAttr={modal.footerAttr}
+                                        bodyText={Input("Enter your folder name", "form-control")}
+                                        onModalSuccess={() => onModalSuccess()}
+                                    />
+                                ) : (
+                                    null
+                                )
+                            }
+                            <Header root={root.prop} crumbData={crumb} crumbSelection={(data) => crumbSelection(data)}
+                                uploadFile={(data) => handleUpload(data)}
+                                action={(data) => handleAction(data)} headerHeight={(data) => setHeaderHeight(data)}
+                            />
+                            <div className="main-container">
+                                <Sidebar height={props.windowHeight - props.footerHeight - headerHeight} root={cabinet} handleSelect={(data) => handleSelect(data)} />
+                                <Explorer handleDirectory={(isDirectory, folderName) => handleDirectory(isDirectory, folderName)} height={props.windowHeight - props.footerHeight - headerHeight} explorer={explorer} />
+                            </div>
+                        </div>
                     )
                 }
-                <div className="universal">
-                    <Header root={root.prop} crumbData={crumb} crumbSelection={(data) => crumbSelection(data)} 
-                    uploadFile = {(data) => handleUpload(data)}
-                    action = {(data) => handleAction(data)}
-                    />
-                    <div className="main-container">
-                        <Sidebar height={props.windowHeight - props.footerHeight} root={cabinet} handleSelect={(data) => handleSelect(data)} />
-                        <Explorer handleDirectory = {(isDirectory, folderName) => handleDirectory(isDirectory, folderName)} height={props.windowHeight - props.footerHeight} explorer={explorer} />
-                    </div>
-                </div>
+
             </div>
         )
     } else {

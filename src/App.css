@@ -276,3 +276,32 @@ body {
 .navigator{
   background-color: #f1f1f1;
 }
+
+.document-viewer-component{
+  background-color: #8e8f92;
+}
+
+.document-modal-viewer{
+  padding-right: 500px;
+  padding-left: 500px;
+  height: 100%;
+}
+
+.document-viewer{
+  background-color: rgb(80, 80, 83);
+  height: 100%;
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+.text-header{
+  font-weight: bold;
+}
+
+.document-viewer-control-key{
+  float: right;
+}
+
+.document-viewer-controls{
+  margin-right: 10px
+}
