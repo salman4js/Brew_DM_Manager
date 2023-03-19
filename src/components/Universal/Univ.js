@@ -23,10 +23,8 @@ const Univ = (props) => {
 
     // Cabinets & Explorer state handler!
     const [cabinet, setCabinet] = useState([]);
+    const [cabinetData, setCabinetData] = useState([]);
     const [explorer, setExplorer] = useState([]);
-
-    // State to prevent the useEffect from been called twice
-    const isMountedRef = useRef(false);
 
     // Loader state handler!
     const [loader, setLoader] = useState(false);
@@ -54,43 +52,68 @@ const Univ = (props) => {
 
     // Side Bar File Selection Handler!
     function handleSelect(data) {
-        // Check the curernt path of the content!
-        var currentPath = content.split("/");
 
-        if (currentPath[1] === data) {
+        // Check the curernt path of the content!
+        var currentPath = afterOccurence(content, "/");
+
+        if (currentPath === data) {
             return;
         } else {
             // Content state update to get the valid data from the content server!
             setContent((options) => {
                 if (options.indexOf("/") > -1) {
-                    if (cabinet.includes(data)) {
+                    if (checkCabinet(data)) {
                         const cabinetValue = data;
-                        const updateValue = options.replace(/\/\w+$/, "/" + cabinetValue);
+                        const updateValue = afterOccurence(options, "/");
+                        const initialValue = beforeOccurence(options, "/");
+                        const newValue = initialValue + "/" + updateValue.replace(updateValue, cabinetValue); // Combining the cs default data 'content' 
+                        // with the replacable data from the bread crumbs
                         // Get the data from the content server!
-                        getExplorerData(props.id, updateValue);
-                        return updateValue;
+                        getExplorerData(props.id, newValue);
+                        return newValue;
                     } else {
-                        return;
+                        // This else block if for the folders which are not in the cabinets tree structure!
+                        const result = handleFolderAction(options, data);
+                        return result;
                     }
                 } else {
-                    const updateValue = options.concat("/" + data);
-                    // Get the data from the content server!
-                    getExplorerData(props.id, updateValue);
-                    return updateValue;
+                    const result = handleFolderAction(options, data);
+                    return result;
                 }
             })
 
             // Update the crumbs data only when the selected values are not from the cabinets data!
             // Crumb data which needs to be modified later : TODO
-            if(cabinet.includes(data)){
-                updateCrumb(data); // Have a check once!
-            }
+            updateCrumb(data)
         }
+    }
+
+    // Handle Select for the first time and for the data which are not in the cabinet structure!
+    function handleFolderAction(options, data) {
+        const updateValue = options.concat("/" + data);
+        // Get the data from the content server!
+        getExplorerData(props.id, updateValue);
+        return updateValue;
+    }
+
+    // substring of the data after the fisrt occurence!
+    function afterOccurence(data, value){
+        return data.substring(data.indexOf(value) + 1);
+    }
+
+    // substring of the data before the first occurence!
+    function beforeOccurence(data, value){
+        return data.substring(0, data.indexOf(value));
     }
 
     // Handle Crumb Selection!
     function crumbSelection(data) {
         console.log("Crumb Selection triggered", data);
+    }
+
+    // Check Cabinet Data
+    function checkCabinet(data){
+       return cabinetData.includes(data);
     }
 
     // Get explorer data!
@@ -110,7 +133,7 @@ const Univ = (props) => {
     // Update Crumb on onRender!
     function updateCrumb(data){
         setCrumb((opt => {
-            if (cabinet.includes(data)) {
+            if (checkCabinet(data)) {
                 const updatedOptions = [data]; // Used array data type, cause we store this in the local storage with JSON.stringify usage!
                 setStorage(root.breadCrumb, JSON.stringify(updatedOptions));
                 return updatedOptions;
@@ -128,6 +151,9 @@ const Univ = (props) => {
         const result = await getData(id, node);
         if (result.status === 200) {
             setCabinet(result.data.message);
+            result.data.message.map((options,key) => {
+                setCabinetData(cabinetData => [...cabinetData, options.name])
+            })
             setLoader(false);
         } else {
             console.error(result.data.message);
@@ -161,7 +187,6 @@ const Univ = (props) => {
                 populateModal(_modalData);
                 break;
             case "Properties": 
-                console.log("Hey hey switch!")
                 break;
         }
     }
@@ -213,12 +238,18 @@ const Univ = (props) => {
             <InputBox placeholder = {placeholder} className = {className} onChange = {(data) => setModalInput(data)} />
         )
     }
+
+    // Handle Directory for the explorer
+    function handleDirectory(isDirectory, folderName){
+        if(isDirectory){
+            handleSelect(folderName);
+        }
+    }
     
     // Get the side tree data before the page renders!
     useEffect(() => {
         getCabinetData(props.id, getStorage(root.content));
-        getExplorerData(props.id, "content/Home");
-        updateCrumb("Home");
+        handleSelect("Home");
     }, [props.id])
 
 
@@ -243,7 +274,7 @@ const Univ = (props) => {
                     />
                     <div className="main-container">
                         <Sidebar height={props.windowHeight - props.footerHeight} root={cabinet} handleSelect={(data) => handleSelect(data)} />
-                        <Explorer height={props.windowHeight - props.footerHeight} explorer={explorer} />
+                        <Explorer handleDirectory = {(isDirectory, folderName) => handleDirectory(isDirectory, folderName)} height={props.windowHeight - props.footerHeight} explorer={explorer} />
                     </div>
                 </div>
             </div>
