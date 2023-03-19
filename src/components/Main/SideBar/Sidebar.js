@@ -9,7 +9,7 @@ const Sidebar = (props) => {
           {
             props.root.map((option,key) => {
               return(
-                <FileItems name = {option} handleSelect = {(data) => props.handleSelect(data)} />
+                <FileItems name = {option.name} handleSelect = {(data) => props.handleSelect(data)} />
               )
             })
           }

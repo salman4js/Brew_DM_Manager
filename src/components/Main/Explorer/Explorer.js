@@ -1,7 +1,9 @@
 import React from 'react';
 import { root } from '../root/root';
+import { IconFile, IconFolder } from '../Icons/IconsHolder';
 
 const Explorer = (props) => {
+
 
   if(props.explorer.length > 0){
     return (
@@ -10,9 +12,18 @@ const Explorer = (props) => {
           {
               props.explorer.map((options,key) => {
                 return(
-                  <div className = "explorer-data">
+                  <div className = "explorer-data" onClick={() => props.handleDirectory(options.directory, options.name)}>
                     <span>
-                      {options}
+                      {
+                        options.directory ? (
+                          <IconFolder />
+                        ) : (
+                          <IconFile />
+                        )
+                      }
+                    </span>
+                    <span className = "brew-title-workspace side-align">
+                      {options.name}
                     </span>
                   </div>
                 )

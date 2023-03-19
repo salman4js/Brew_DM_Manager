@@ -21,12 +21,15 @@ export async function loginUser(data, id){
 export async function getData(id, path){
     // Make Up the ID!
     const URL = "https://" + id + ".ngrok.io"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
+    
+    // Form Required Data!
+    const data = {
+        folder: path
+    }
     try{
-        const data = {
-            folder: path
-        }
         const result = await axios.post("http://localhost:3200/folders", data);
         return result;
+
     } catch(err){
         if(err.response && err.response.status){
             return err.response;
@@ -37,7 +40,7 @@ export async function getData(id, path){
 // Upload the file to the server in the respective path!
 export async function uploadFile(data, path, id){
     const URL = "https://" + id + ".ngrok.io"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
-    const pathName = path.split("/")[1] + "/"; // Adding "/" as the path identifier for the server to upload the documents!
+    const pathName = path.substring(path.indexOf("/") + 1) + "/" // Adding "/" as the path identifier for the server to upload the documents!
 
     // Form Data with PathName
     const uploadFile = new FormData();
