@@ -7,11 +7,12 @@ import InputBox from '../modal.panel/modal.textfield.view/modal.textfield.view';
 
 // Importing Side Panel data!
 import { root } from '../Main/root/root';
-import { getData, uploadFile, createFolder } from '../../Controller/Requests/Function';
+import { getData, uploadFile, createFolder, downloadFile } from '../../Controller/Requests/Function';
 
 // Importing storage functions!
 import { getStorage, setStorage } from '../../Controller/Storage';
 import Spinner from '../Loader/Spinner';
+import Viewer from '../Viewer/Viewer';
 
 const Univ = (props) => {
 
@@ -28,6 +29,12 @@ const Univ = (props) => {
 
     // Loader state handler!
     const [loader, setLoader] = useState(false);
+
+    // File Viewer State Handler!
+    const [view, setView] = useState({
+        show: false,
+        file: undefined
+    })
 
     // Modal State handler!
     const [modal, setModal] = useState({
@@ -240,10 +247,40 @@ const Univ = (props) => {
     }
 
     // Handle Directory for the explorer
-    function handleDirectory(isDirectory, folderName){
+    async function handleDirectory(isDirectory, folderName){
         if(isDirectory){
             handleSelect(folderName);
+        } else {
+            // Populate the view state modal
+            const filePath = content + "/" + folderName;
+            const result = await fileDownload(filePath);
+            const viewModal = {
+                show: true,
+                file: result
+            }
+            openViewer(viewModal);
         }
+    }
+
+    // Handling the file download from the server!
+    async function fileDownload(filePath){
+        return await downloadFile(filePath);
+    }
+
+    // Open the file viewer!
+    function openViewer(modal){
+        setView({
+            ...view,
+            show: modal.show,
+            file: modal.file
+        })
+    }
+
+    // Render the viewer with the modal attributes!
+    function renderViewer(){
+        return(
+            <Viewer file = {view.file} />
+        )
     }
     
     // Get the side tree data before the page renders!
@@ -263,6 +300,13 @@ const Univ = (props) => {
                         bodyText = {Input("Enter your folder name", "form-control")}
                         onModalSuccess = {() => onModalSuccess()}
                         />
+                    ) : (
+                        null
+                    )
+                }
+                {
+                    view.show ? (
+                        renderViewer()
                     ) : (
                         null
                     )
