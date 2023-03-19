@@ -77,3 +77,22 @@ export async function createFolder(pathName, id){
         }
     }
 }
+
+// Handle file download from the server for the viewer!
+export async function downloadFile(filePath){
+
+    // Form the file path!
+    const data = {
+        filePath: filePath
+    }
+
+    try{
+        const result = await axios.post("http://localhost:3200/download", data);
+        return result;
+    } catch(err){
+        if(err.response && err.response.status){
+            return err.response;
+        }
+    }
+
+}
