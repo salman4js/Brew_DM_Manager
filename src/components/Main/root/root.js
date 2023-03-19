@@ -3,5 +3,7 @@ export const root = {
     prop: ['New Folder', 'Properties'],
     breadCrumb: 'Crumb',
     content: "content",
-    noFiles: "No items to display!"
+    noFiles: "No items to display!",
+    DocumentHeader: "Control Center",
+    page: "Page"
 }
