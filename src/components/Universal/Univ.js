@@ -72,8 +72,12 @@ const Univ = (props) => {
             // Content state update to get the valid data from the content server!
             setContent((options) => {
                 if (options.indexOf("/") > -1) {
-                    if (checkCabinet(data)) {
-                        const cabinetValue = data;
+                    if (checkCabinet(data) || Array.isArray(data)) {
+                        if(Array.isArray(data)){
+                            var cabinetValue = data.join("/")
+                        } else {
+                            var cabinetValue = data;
+                        }
                         const updateValue = afterOccurence(options, "/");
                         const initialValue = beforeOccurence(options, "/");
                         const newValue = initialValue + "/" + updateValue.replace(updateValue, cabinetValue); // Combining the cs default data 'content' 
@@ -118,12 +122,22 @@ const Univ = (props) => {
 
     // Handle Crumb Selection!
     function crumbSelection(data) {
-        console.log("Crumb Selection triggered", data);
+        const isValue = checkCrumb(data);
+        if(isValue){
+            let indexOfData = crumb.indexOf(data);
+            let newArrOfData = crumb.slice(0, indexOfData + 1);
+            handleSelect(newArrOfData);
+        }
     }
 
     // Check Cabinet Data
     function checkCabinet(data) {
         return cabinetData.includes(data);
+    }
+
+    // Check Crumb Data!
+    function checkCrumb(data){
+        return crumb.includes(data);
     }
 
     // Get explorer data!
@@ -143,8 +157,12 @@ const Univ = (props) => {
     // Update Crumb on onRender!
     function updateCrumb(data) {
         setCrumb((opt => {
-            if (checkCabinet(data)) {
-                const updatedOptions = [data]; // Used array data type, cause we store this in the local storage with JSON.stringify usage!
+            if (checkCabinet(data) || Array.isArray(data)) {
+                if(Array.isArray(data)){
+                    var updatedOptions = [data]; // Used array data type, cause we store this in the local storage with JSON.stringify usage!
+                } else {
+                    var updatedOptions = [data];
+                }
                 setStorage(root.breadCrumb, JSON.stringify(updatedOptions));
                 return updatedOptions;
             } else {
@@ -279,10 +297,19 @@ const Univ = (props) => {
         })
     }
 
+    // Close the document viewer!
+    function cancelViewer(){
+        setView({
+            ...view,
+            show: false,
+            file: undefined
+        })
+    }
+
     // Render the viewer with the modal attributes!
     function renderViewer(windowHeight, footerHeight) {
         return (
-            <DocumentViewer file={view.file} height={windowHeight - footerHeight} />
+            <DocumentViewer file={view.file} height={windowHeight - footerHeight} cancelViewer = {() => cancelViewer()} />
         )
     }
 

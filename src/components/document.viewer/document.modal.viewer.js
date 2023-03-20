@@ -9,10 +9,9 @@ const Viewer = (props) => {
         props.setPageNumber(1);
     }
 
-
     return (
         <div>
-            <div>
+            <div className = "document-viewer-space">
                 <Document
                     file={props.file}
                     onLoadSuccess={onDocumentLoadSuccess}

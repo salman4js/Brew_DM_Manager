@@ -13,7 +13,7 @@ const DocumentHeader = (props) => {
                     {root.page} {props.pageNumber} of {props.numPages}
                 </span>
                 <DocumentControl goToPrevPage={() => props.goToPrevPage()}
-                    goToNextPage={() => props.goToNextPage()}
+                    goToNextPage={() => props.goToNextPage()} cancelViewer = {() => props.cancelViewer()}
                 />
             </span>
         </div>
