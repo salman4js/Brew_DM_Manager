@@ -19,7 +19,7 @@ const Header = (props) => {
     return (
         <div className="header-container" ref = {headerRef}>
             <div className="header-grid-container">
-                <Control />
+                <Control navigateBack = {() => props.navigateBack()} navigateFront = {() => props.navigateFront()} />
                 <Crumbs actions = {props.root} crumb = {props.crumbData} crumbSelection = {(data) => props.crumbSelection(data)}
                     uploadFile = {(data) => props.uploadFile(data)} action = {(data) => props.action(data) }
                 />

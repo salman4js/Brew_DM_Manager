@@ -159,7 +159,12 @@ const Univ = (props) => {
         setCrumb((opt => {
             if (checkCabinet(data) || Array.isArray(data)) {
                 if(Array.isArray(data)){
-                    var updatedOptions = [data]; // Used array data type, cause we store this in the local storage with JSON.stringify usage!
+                    var updatedOptions = [];
+                    data.map((options) => {
+                        updatedOptions.push(options);
+                    })
+                    return updatedOptions;
+                    // Used array data type, cause we store this in the local storage with JSON.stringify usage!
                 } else {
                     var updatedOptions = [data];
                 }
@@ -171,6 +176,18 @@ const Univ = (props) => {
                 return updatedOptions;
             }
         }));
+    }
+
+    // Control Keys Handler!
+    function navigateBack(){
+        const getPath = crumb.slice(0, crumb.length -1);
+        const crumbPath = getPath[getPath.length -1]; // Gets the crumb value before the current crumb value. 
+        //Pass the before value to the crumbSelection to take care of the navigation part.
+        crumbSelection(crumbPath);
+    }
+
+    function navigateFront(){
+        return;
     }
 
     // Get Cabinet Data
@@ -343,6 +360,7 @@ const Univ = (props) => {
                             <Header root={root.prop} crumbData={crumb} crumbSelection={(data) => crumbSelection(data)}
                                 uploadFile={(data) => handleUpload(data)}
                                 action={(data) => handleAction(data)} headerHeight={(data) => setHeaderHeight(data)}
+                                navigateBack = {() => navigateBack()} navigateFront = {() => navigateFront()}
                             />
                             <div className="main-container">
                                 <Sidebar height={props.windowHeight - props.footerHeight - headerHeight} root={cabinet} handleSelect={(data) => handleSelect(data)} />
