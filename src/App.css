@@ -254,7 +254,11 @@ body {
   margin-bottom: 5px;
   color: black;
   background-color:rgb(192, 188, 188);
+}
 
+.explorer-cabinet-data{
+  height: 100%;
+  overflow: auto;
 }
 
 .explorer-data:hover{
