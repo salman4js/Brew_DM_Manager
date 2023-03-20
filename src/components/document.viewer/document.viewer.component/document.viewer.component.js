@@ -29,7 +29,7 @@ const DocumentViewer = (props) => {
             <div className="document-modal-viewer">
                 <div className="document-viewer">
                     <div>
-                        <DocumentHeader goToPrevPage = {() => goToPrevPage()} goToNextPage = {() => goToNextPage()} pageNumber = {pageNumber} numPages = {numPages} />
+                        <DocumentHeader goToPrevPage = {() => goToPrevPage()} goToNextPage = {() => goToNextPage()} pageNumber = {pageNumber} numPages = {numPages} cancelViewer = {() => props.cancelViewer()} />
                     </div>
                     <Viewer file={props.file} onDocumentLoadSuccess = {() => onDocumentLoadSuccess()} 
                     pageNumber = {pageNumber} 

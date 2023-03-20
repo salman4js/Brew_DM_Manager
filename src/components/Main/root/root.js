@@ -4,6 +4,6 @@ export const root = {
     breadCrumb: 'Crumb',
     content: "content",
     noFiles: "No items to display!",
-    DocumentHeader: "Control Center",
+    DocumentHeader: "Document Viewer",
     page: "Page"
 }
