@@ -39,7 +39,7 @@ const Univ = (props) => {
         file: undefined
     })
 
-    // Modal State handler!
+    // Panel State handler!
     const [modal, setModal] = useState({
         show: false,
         header: undefined,
@@ -209,14 +209,40 @@ const Univ = (props) => {
     // Upload the file to the server
     async function handleUpload(data) {
         setLoader(true);
+        // Defining the panel state for toast message!
+        const panelState = {
+            show: false,
+            header: undefined,
+            body: false,
+            bodyText: undefined,
+            footer: false,
+            onHide: function () {
+                closeModal();
+            }
+        }
+
         const result = await uploadFile(data, content, props.id); // Have a modal to let the user know that the file has been uploaded!
         if (result.status === 200) {
             getExplorerData(props.id, content);
-            setLoader(false);
+            // Alert that the file has been successfully uploaded!
+            panelState['show'] = result.data.success;
+            panelState['header'] = result.data.message;
+        } else if(result.status === 201) {
+            panelState['show'] = result.data.success;
+            panelState['header'] = result.data.message;
+            panelState['body'] = result.data.success;
+            panelState['bodyText'] = result.data.bodyText;
+            panelState['footer'] = result.data.success;
         } else {
-            console.error(result.data.message);
-            setLoader(false);
+            panelState['show'] = !result.data.success;
+            panelState['header'] = result.data.message;            
         }
+
+        // Shut the loader down!
+        setLoader(false);
+        
+        // Populate Modal
+        populateModal(panelState);
     }
 
     // Handle Crumbs Dropdown action!
@@ -228,6 +254,7 @@ const Univ = (props) => {
                     footer: true,
                     show: true,
                     body: true,
+                    bodyText: Input("Enter your folder name", "form-control")
                 }
                 populateModal(_modalData);
                 break;
@@ -243,14 +270,14 @@ const Univ = (props) => {
             header: _modalData.header,
             footer: _modalData.footer,
             show: _modalData.show,
-            body: _modalData.body
+            body: _modalData.body,
+            bodyText: _modalData.bodyText
         })
     }
 
     function closeModal() {
         setModal({
             ...modal,
-            show: false,
             show: undefined,
             header: undefined,
             body: undefined,
@@ -261,13 +288,35 @@ const Univ = (props) => {
 
     // Folder Creation!
     async function folderCreation(path, id) {
+
+        setLoader(true);
+        // Panel value model for folder creation!
+        const panelValue = {
+            show: undefined,
+            header: undefined,
+            body: undefined,
+            bodyText: undefined,
+            footer: undefined
+        }
         const result = await createFolder(path, id);
         if (result.status === 200) {
             closeModal() // Close the modal before making the call
             getExplorerData(id, content); // Call the getExplorer data to make the changes appear from the content server!
+            
+            // Open up the toast based on the response!
+            panelValue.show = result.data.success;
+            panelValue.header = result.data.message;
         } else {
-            console.error(result.data.message);
+            // Updating panel value state
+            panelValue.show = !result.data.success;
+            panelValue.header = result.data.message;
+            panelValue.body = result.data.success;
+            panelValue.footer = result.data.success;
         }
+
+        populateModal(panelValue); // Populate the model with the data response!
+
+        setLoader(false); 
     }
 
     // On Modal Success!
@@ -350,7 +399,7 @@ const Univ = (props) => {
                                 modal ? (
                                     <PanelView onHide={modal.onHide} show={modal.show} header={modal.header} body={modal.body}
                                         footer={modal.footer} footerAttr={modal.footerAttr}
-                                        bodyText={Input("Enter your folder name", "form-control")}
+                                        bodyText={modal.bodyText}
                                         onModalSuccess={() => onModalSuccess()}
                                     />
                                 ) : (
