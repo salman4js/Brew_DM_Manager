@@ -38,7 +38,8 @@ export async function getData(id, path){
 }
 
 // Upload the file to the server in the respective path!
-export async function uploadFile(data, path, id){
+export async function uploadFile(data, path, id, addVersion){
+
     const URL = "https://" + id + ".ngrok.io"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
     const pathName = path.substring(path.indexOf("/") + 1) + "/" // Adding "/" as the path identifier for the server to upload the documents!
 
@@ -49,9 +50,15 @@ export async function uploadFile(data, path, id){
 
     // To catch the error in the catch block if the call fails
     try{
-        // Upload the file to the server!
-        const result = await axios.post("http://localhost:3200/upload", uploadFile);
-        return result;
+        if(addVersion){
+            // Upload the file to the server!
+            const result = await axios.post("http://localhost:3200/addversion-fileupload", uploadFile);
+            return result;
+        } else {
+            // Upload the file to the server!
+            const result = await axios.post("http://localhost:3200/upload", uploadFile);
+            return result;
+        }
     } catch(err){
         if(err.response && err.response.status){
             return err.response;
@@ -61,6 +68,7 @@ export async function uploadFile(data, path, id){
 
 // Create a folder in the destination path!
 export async function createFolder(pathName, id){
+
     const URL = "https://" + id + ".ngrok.io"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
     
     // Create a data!

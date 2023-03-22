@@ -153,6 +153,21 @@ body {
   font-size: 18px;
 }
 
+.file-items-table-view{
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.file-items-name{
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.file-items-add-version{
+  grid-row: 1;
+  grid-column: 5;
+}
+
 .side-align {
   margin-left: 15px;
 }

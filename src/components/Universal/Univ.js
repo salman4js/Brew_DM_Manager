@@ -25,6 +25,9 @@ const Univ = (props) => {
     // Content state handler!
     const [content, setContent] = useState(getStorage(root.content));
 
+    // Temporary file data state handler!
+    const [fileBlob, setFileBlob] = useState();
+
     // Cabinets & Explorer state handler!
     const [cabinet, setCabinet] = useState([]);
     const [cabinetData, setCabinetData] = useState([]);
@@ -207,7 +210,10 @@ const Univ = (props) => {
     }
 
     // Upload the file to the server
-    async function handleUpload(data) {
+    async function handleUpload(data, addVersion) {
+        // Store the file value temporarily in the state handler!
+        setFileBlob(data);
+
         setLoader(true);
         // Defining the panel state for toast message!
         const panelState = {
@@ -220,10 +226,8 @@ const Univ = (props) => {
                 closeModal();
             }
         }
-
-        const result = await uploadFile(data, content, props.id); // Have a modal to let the user know that the file has been uploaded!
+        const result = await uploadFile(data, content, props.id, addVersion); // Have a modal to let the user know that the file has been uploaded!
         if (result.status === 200) {
-            getExplorerData(props.id, content);
             // Alert that the file has been successfully uploaded!
             panelState['show'] = result.data.success;
             panelState['header'] = result.data.message;
@@ -238,6 +242,7 @@ const Univ = (props) => {
             panelState['header'] = result.data.message;            
         }
 
+        getExplorerData(props.id, content);
         // Shut the loader down!
         setLoader(false);
         
@@ -278,7 +283,7 @@ const Univ = (props) => {
     function closeModal() {
         setModal({
             ...modal,
-            show: undefined,
+            show: false,
             header: undefined,
             body: undefined,
             bodyText: undefined,
@@ -321,9 +326,14 @@ const Univ = (props) => {
 
     // On Modal Success!
     async function onModalSuccess() {
-        // Form the path with the folder name defined
-        const path = content + "/" + modalInput // Folder Name defined in the modal textarea view!
-        folderCreation(path, props.id);
+        if(modal.header === "Folder Creation"){
+
+            const path = content + "/" + modalInput // Folder Name defined in the modal textarea view!
+            folderCreation(path, props.id);
+        } else { // Add Version Dialog and if the user triggers add version!
+            closeModal();
+            handleUpload(fileBlob, true); 
+        }
     }
 
     // Input Box for the modal to handle the folder creation data
@@ -407,7 +417,7 @@ const Univ = (props) => {
                                 )
                             }
                             <Header root={root.prop} crumbData={crumb} crumbSelection={(data) => crumbSelection(data)}
-                                uploadFile={(data) => handleUpload(data)}
+                                uploadFile={(data) => handleUpload(data, false)}
                                 action={(data) => handleAction(data)} headerHeight={(data) => setHeaderHeight(data)}
                                 navigateBack = {() => navigateBack()} navigateFront = {() => navigateFront()}
                             />
