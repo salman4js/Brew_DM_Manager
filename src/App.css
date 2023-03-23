@@ -168,6 +168,19 @@ body {
   grid-column: 5;
 }
 
+.file-items-download{
+  grid-row: 1;
+  grid-column: 6;
+}
+
+.file-items-download-icon{
+  margin-left: calc(100% - 135px);
+}
+
+.file-items-download:hover{
+  background-color: #7b7d7b;
+}
+
 .side-align {
   margin-left: 15px;
 }
