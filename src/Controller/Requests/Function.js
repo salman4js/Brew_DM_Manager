@@ -87,9 +87,10 @@ export async function createFolder(pathName, id){
 }
 
 // Handle file download from the server for the viewer!
-export async function downloadFile(filePath){
+export async function downloadFile(filePath, id){
 
-    // Form the file path!
+    const URL = "https://" + id + ".ngrok.io";
+
     const data = {
         filePath: filePath
     }
@@ -102,5 +103,24 @@ export async function downloadFile(filePath){
             return err.response;
         }
     }
+}
 
+// Handle Add Version File Viewer!
+export async function addVersion(fileName, filePath, id){
+
+    const URL = "https://" + id + ".ngrok.io";
+
+    const data = {
+        fileName: fileName,
+        folder: filePath
+    }
+
+    try{
+        const result = await axios.post("http://localhost:3200/addversion-files", data);
+        return result;
+    } catch(err){
+        if(err.response && err.response.status){
+            return err.response;
+        }
+    }
 }
