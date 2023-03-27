@@ -4,10 +4,11 @@ import Explorer from '../Main/Explorer/Explorer'
 import Header from '../Main/Header/Header';
 import PanelView from '../modal.panel/modal.panel.header.view';
 import InputBox from '../modal.panel/modal.textfield.view/modal.textfield.view';
+import ActionItems from '../modal.panel/menu.action.modal/menu.action.view';
 
 // Importing Side Panel data!
 import { root } from '../Main/root/root';
-import { getData, uploadFile, createFolder, downloadFile } from '../../Controller/Requests/Function';
+import { getData, uploadFile, createFolder, downloadFile, addVersion } from '../../Controller/Requests/Function';
 
 // Importing storage functions!
 import { getStorage, setStorage } from '../../Controller/Storage';
@@ -62,6 +63,21 @@ const Univ = (props) => {
 
     // Input State Handler!
     const [modalInput, setModalInput] = useState();
+
+    // Manu Action for all the versions of the document!
+    function menuAction(fileName){
+        // Initiate the menu actions!
+        const menuModal = {
+            show: true,
+            header: "What action would you like to perform?",
+            body: true,
+            bodyText: actionButton(fileName),
+            footer: false
+        }
+
+        // Populate the modal!
+        populateModal(menuModal);
+    }
 
     // Side Bar File Selection Handler!
     function handleSelect(data) {
@@ -343,6 +359,54 @@ const Univ = (props) => {
         )
     }
 
+    // Actions buttons for the add version actions!
+    function actionButton(fileName){
+
+        // Action Items!
+        const actionItems = {
+            buttons : true, 
+            btnAttr: {
+                btn1: "Download",
+                btn2: "Show all versions"
+            }
+        }
+
+        return(
+            <ActionItems actionItems = {actionItems} onDownload = {() => onDownload()} onShow = {(fileName, filePath) => onShow(fileName, filePath)} fileName = {fileName} filePath = {content}  />
+        )
+    }
+
+    // Action Items Helper Functions - Handles Download and Add version files viewer!
+    function onDownload(){
+        console.log("Download Initiated!");
+    }
+
+    async function onShow(fileName, filePath){
+
+        // Toast Message Handler!
+        const toastHandler = {
+            show: undefined,
+            header: undefined,
+            body: undefined,
+            bodyText: undefined,
+            footer: undefined
+        }
+
+        const result = await addVersion(fileName, filePath, props.id);
+        if(result.status === 200){
+            setExplorer(result.data.message);
+            modal.onHide(); // Close the actions modal!
+        } else {
+            toastHandler['show'] = !result.data.success;
+            toastHandler['header'] = result.data.message;
+            toastHandler['body'] = result.data.success;
+            toastHandler['footer'] = result.data.success;
+
+            // Populate the modal for the error toast message!
+            populateModal(toastHandler);
+        }
+    }
+
     // Handle Directory for the explorer
     async function handleDirectory(isDirectory, folderName) {
         if (isDirectory) {
@@ -361,7 +425,7 @@ const Univ = (props) => {
 
     // Handling the file download from the server!
     async function fileDownload(filePath) {
-        return await downloadFile(filePath);
+        return await downloadFile(filePath, props.id);
     }
 
     // Open the file viewer!
@@ -423,7 +487,9 @@ const Univ = (props) => {
                             />
                             <div className="main-container">
                                 <Sidebar height={props.windowHeight - props.footerHeight - headerHeight} root={cabinet} handleSelect={(data) => handleSelect(data)} />
-                                <Explorer handleDirectory={(isDirectory, folderName) => handleDirectory(isDirectory, folderName)} height={props.windowHeight - props.footerHeight - headerHeight} explorer={explorer} />
+                                <Explorer handleDirectory={(isDirectory, folderName) => handleDirectory(isDirectory, folderName)} height={props.windowHeight - props.footerHeight - headerHeight} explorer={explorer} 
+                                menuAction = {(fileName) => menuAction(fileName)}
+                                />
                             </div>
                         </div>
                     )

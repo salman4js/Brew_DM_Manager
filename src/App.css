@@ -168,16 +168,16 @@ body {
   grid-column: 5;
 }
 
-.file-items-download{
+.file-menu-items{
   grid-row: 1;
   grid-column: 6;
 }
 
-.file-items-download-icon{
+.file-menu-items-icon{
   margin-left: calc(100% - 135px);
 }
 
-.file-items-download:hover{
+.file-menu-items:hover{
   background-color: #7b7d7b;
 }
 
@@ -336,4 +336,13 @@ body {
 
 .document-viewer-controls{
   margin-right: 10px
+}
+
+.menu-action-items{
+  width: 100%
+}
+
+.menu-action-item{
+  width: 100%;
+  margin-bottom: 15px;
 }
