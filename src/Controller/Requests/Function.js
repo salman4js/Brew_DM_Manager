@@ -2,13 +2,14 @@ import axios from 'axios';
 const url = "http://localhost:3002"
 
 // Login User Handler!
-export async function loginUser(data, id){
+export async function loginUser(data, id, username){
     const credentials = {
         cs : id,
+        username: username,
         password: data
     }
     try{
-        const result = await axios.post(`${url}/loginuser`, credentials);
+        const result = await axios.post(`${url}/${id}/loginuser`, credentials);
         return result;
     } catch(err){
         if(err.response && err.response.status){

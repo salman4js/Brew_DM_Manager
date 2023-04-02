@@ -12,6 +12,9 @@ const Login = (props) => {
 
     // Retrieving ID
     const { id } = useParams();
+    const params = id.split("@");
+    const username = params[1];
+    const dataId = params[0];
 
     // Error Handling State!
     const [error, setError] = useState({
@@ -42,18 +45,18 @@ const Login = (props) => {
     // Login Key Event Handler!
     async function handleLogin(data, id) {
         if (data.key === "Enter") {
-           const result = await loginUser(data.target.value, id);
+           const result = await loginUser(data.target.value, dataId, username);
            if(result.status === 200){
             navigate(`/${id}/desktop`, {replace: true});
            } else {
             // Error Handling!
             setError({
                 ...error,
-                show: !result.data.success,
+                show: true,
                 header: "Error Logging In!",
-                body: !result.data.success,
-                bodyText: result.data.message,
-                footer: result.data.success,
+                body: false,
+                bodyText: result.status,
+                footer: false,
             })
            }
         }
