@@ -34,6 +34,11 @@ const Explorer = (props) => {
                             {options.version === undefined ? "Latest" : options.version.slice(-1) + ".0"}
                           </span>
                         </div>
+                        <div className = "file-items-modified">
+                            <span>
+                              {options.modified}
+                            </span>
+                        </div>
                         <div className="file-menu-items" onClick={() => props.menuAction(options.name)}>
                           <span className="file-menu-items-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">

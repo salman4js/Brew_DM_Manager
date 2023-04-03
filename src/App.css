@@ -168,6 +168,11 @@ body {
   grid-column: 5;
 }
 
+.file-items-modified{
+  grid-row: 1;
+  grid-column: 4;
+}
+
 .file-menu-items{
   grid-row: 1;
   grid-column: 6;
