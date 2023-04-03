@@ -1,3 +1,4 @@
+import { getStorage, setStorage } from '../Storage';
 import axios from 'axios';
 const url = "http://localhost:3002"
 
@@ -10,7 +11,10 @@ export async function loginUser(data, id, username){
     }
     try{
         const result = await axios.post(`${url}/${id}/loginuser`, credentials);
-        return result;
+        if(result.status === 200){
+            setStorage("username", username); // Setting the username in local storage!
+            return result;
+        }
     } catch(err){
         if(err.response && err.response.status){
             return err.response;
@@ -41,6 +45,8 @@ export async function getData(id, path){
 // Upload the file to the server in the respective path!
 export async function uploadFile(data, path, id, addVersion){
 
+    let getUsername = getStorage("username");
+
     const URL = "https://" + id + ".ngrok.io"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
     const pathName = path.substring(path.indexOf("/") + 1) + "/" // Adding "/" as the path identifier for the server to upload the documents!
 
@@ -48,6 +54,7 @@ export async function uploadFile(data, path, id, addVersion){
     const uploadFile = new FormData();
     uploadFile.append("uploadFile", data);
     uploadFile.append("pathName", pathName);
+    uploadFile.append("username", getUsername);
 
     // To catch the error in the catch block if the call fails
     try{
