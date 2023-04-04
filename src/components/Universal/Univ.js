@@ -161,15 +161,19 @@ const Univ = (props) => {
 
     // Get explorer data!
     async function getExplorerData(id, node) {
-        setLoader(true);
-        const result = await getData(id, node);
-        if (result.status === 200) {
-            setExplorer(result.data.message);
-            setLoader(false);
-
-        } else {
-            console.error(result.data.message);
-            setLoader(false);
+        try{
+            setLoader(true);
+            const result = await getData(id, node);
+            if (result.status === 200) {
+                setExplorer(result.data.message);
+                setLoader(false);
+                return true;
+            } else {
+                console.error(result.data.message);
+                setLoader(false);
+            }
+        } catch(err){
+            getExplorerData(props.id, content)
         }
     }
 
@@ -244,9 +248,9 @@ const Univ = (props) => {
         }
         const result = await uploadFile(data, content, props.id, addVersion); // Have a modal to let the user know that the file has been uploaded!
         if (result.status === 200) {
-            // Alert that the file has been successfully uploaded!
-            panelState['show'] = result.data.success;
-            panelState['header'] = result.data.message;
+           // Alert that the file has been successfully uploaded!
+           panelState['show'] = result.data.success;
+           panelState['header'] = result.data.message;
         } else if(result.status === 201) {
             panelState['show'] = result.data.success;
             panelState['header'] = result.data.message;
@@ -322,11 +326,12 @@ const Univ = (props) => {
         const result = await createFolder(path, id);
         if (result.status === 200) {
             closeModal() // Close the modal before making the call
-            getExplorerData(id, content); // Call the getExplorer data to make the changes appear from the content server!
-            
-            // Open up the toast based on the response!
-            panelValue.show = result.data.success;
-            panelValue.header = result.data.message;
+            const isFetched = await getExplorerData(id, content); // Call the getExplorer data to make the changes appear from the content server!
+            if(isFetched){
+                // Open up the toast based on the response!
+                panelValue.show = result.data.success;
+                panelValue.header = result.data.message;
+            } 
         } else {
             // Updating panel value state
             panelValue.show = !result.data.success;
