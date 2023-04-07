@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from '../Main/SideBar/Sidebar'
+import download from 'downloadjs';
 import Explorer from '../Main/Explorer/Explorer'
 import Header from '../Main/Header/Header';
 import PanelView from '../modal.panel/modal.panel.header.view';
@@ -8,7 +9,7 @@ import ActionItems from '../modal.panel/menu.action.modal/menu.action.view';
 
 // Importing Side Panel data!
 import { root } from '../Main/root/root';
-import { getData, uploadFile, createFolder, downloadFile, addVersion, deleteFile } from '../../Controller/Requests/Function';
+import { getData, uploadFile, createFolder, downloadFile, addVersion, deleteFile, downloadOn } from '../../Controller/Requests/Function';
 
 // Importing storage functions!
 import { getStorage, setStorage } from '../../Controller/Storage';
@@ -407,7 +408,7 @@ const Univ = (props) => {
         }
 
         return(
-            <ActionItems actionItems = {actionItems} onDelete = {(fileName, filePath) => onDelete(fileName, filePath)} onDownload = {(filePath) => onDownload(filePath)} onShow = {(fileName, filePath) => onShow(fileName, filePath)} fileName = {fileName} filePath = {content}  />
+            <ActionItems actionItems = {actionItems} onDelete = {(fileName, filePath) => onDelete(fileName, filePath)} onDownload = {(filePath, fileName) => onDownload(filePath, fileName)} onShow = {(fileName, filePath) => onShow(fileName, filePath)} fileName = {fileName} filePath = {content}  />
         )
     }
 
@@ -447,8 +448,11 @@ const Univ = (props) => {
     }
 
     // Action Items Helper Functions - Handles Download and Add version files viewer!
-    async function onDownload(filepath){
-        console.log(filepath);
+    async function onDownload(filepath, fileName){
+        const file = filepath + "/" + fileName
+        const res = await downloadOn(file, props.id);
+        const blob = await res.blob();
+        download(blob, fileName);
     }
 
     async function onShow(fileName, filePath){
