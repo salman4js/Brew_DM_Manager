@@ -20,6 +20,9 @@ const Univ = (props) => {
     // Side bar state handler!
     const [crumb, setCrumb] = useState(JSON.parse(getStorage(root.breadCrumb)));
 
+    // Permissions!
+    const perm = JSON.parse(getStorage("permission"));
+
     // Header Height state handler!
     const [headerHeight, setHeaderHeight] = useState("");
 
@@ -262,12 +265,15 @@ const Univ = (props) => {
             panelState['header'] = result.data.message;            
         }
 
-        getExplorerData(props.id, content);
-        // Shut the loader down!
-        setLoader(false);
-        
-        // Populate Modal
-        populateModal(panelState);
+        const isFetched = await getExplorerData(props.id, content);
+
+        if(isFetched){
+            // Shut the loader down!
+            setLoader(false);
+            
+            // Populate Modal
+            populateModal(panelState);   
+        }
     }
 
     // Handle Crumbs Dropdown action!
@@ -476,14 +482,14 @@ const Univ = (props) => {
         if (isDirectory) {
             handleSelect(folderName);
         } else {
-            // Populate the view state modal
-            const filePath = content + "/" + folderName;
-            const result = await fileDownload(filePath);
-            const viewModal = {
+            const permMessage = {
                 show: true,
-                file: result
+                header: "You don't have permission to view this file",
+                body: false,
+                bodyText: undefined,
+                footer: false
             }
-            openViewer(viewModal);
+            perm.includes("View") ? openViewer(folderName) : populateModal(permMessage);
         }
     }
 
@@ -493,11 +499,14 @@ const Univ = (props) => {
     }
 
     // Open the file viewer!
-    function openViewer(modal) {
+    async function openViewer(folderName) {
+        // Populate the view state modal
+        const filePath = content + "/" + folderName;
+        const result = await fileDownload(filePath);
         setView({
             ...view,
-            show: modal.show,
-            file: modal.file
+            show: true,
+            file: result
         })
     }
 
