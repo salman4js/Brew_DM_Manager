@@ -115,6 +115,29 @@ export async function downloadFile(filePath, id){
     }
 }
 
+export async function downloadOn(filePath, id){
+    const URL = "https://" + id + ".ngrok.io";
+
+    const data = {
+        filePath: filePath
+    }
+
+    try{
+        const result = await fetch("http://localhost:3200/download", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ filePath: filePath })
+          });
+          return result;
+    } catch(err){
+        if(err.response && err.response.status){
+            return err.response;
+        }
+    }
+}
+
 // Handle Add Version File Viewer!
 export async function addVersion(fileName, filePath, id){
 
