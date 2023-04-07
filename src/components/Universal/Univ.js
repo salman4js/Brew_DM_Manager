@@ -8,7 +8,7 @@ import ActionItems from '../modal.panel/menu.action.modal/menu.action.view';
 
 // Importing Side Panel data!
 import { root } from '../Main/root/root';
-import { getData, uploadFile, createFolder, downloadFile, addVersion } from '../../Controller/Requests/Function';
+import { getData, uploadFile, createFolder, downloadFile, addVersion, deleteFile } from '../../Controller/Requests/Function';
 
 // Importing storage functions!
 import { getStorage, setStorage } from '../../Controller/Storage';
@@ -367,23 +367,82 @@ const Univ = (props) => {
     // Actions buttons for the add version actions!
     function actionButton(fileName){
 
+        const perm = JSON.parse(getStorage("permission"));
         // Action Items!
         const actionItems = {
             buttons : true, 
             btnAttr: {
-                btn1: "Download",
-                btn2: "Show all versions"
+                btn1: {
+                    visible: function(){
+                        if(perm.includes("Download")){
+                            return true
+                        }
+                    },
+                    text: "Download"
+                },
+                btn2: "Show all versions",
+                btn3: {
+                    visible: function(){    
+                        if(perm.includes("Delete")){
+                            return true
+                        }
+                    },
+                    text: "Open in code editor"
+                },
+                btn4: {
+                    visible: function(){
+                        if(perm.includes("Delete")){
+                            return true
+                        }
+                    },
+                    text: "Delete"
+                }
             }
         }
 
         return(
-            <ActionItems actionItems = {actionItems} onDownload = {() => onDownload()} onShow = {(fileName, filePath) => onShow(fileName, filePath)} fileName = {fileName} filePath = {content}  />
+            <ActionItems actionItems = {actionItems} onDelete = {(fileName, filePath) => onDelete(fileName, filePath)} onDownload = {(filePath) => onDownload(filePath)} onShow = {(fileName, filePath) => onShow(fileName, filePath)} fileName = {fileName} filePath = {content}  />
         )
     }
 
+    async function onDelete(fileName, filePath){
+
+        setLoader(true);
+        // Panel value model for folder creation!
+        const panelValue = {
+            show: undefined,
+            header: undefined,
+            body: undefined,
+            bodyText: undefined,
+            footer: undefined
+        }
+
+        const file = filePath + "/" + fileName;
+        const result = await deleteFile(file, props.id);
+        if(result.status === 200){
+            closeModal();
+            const isFetched = await getExplorerData(props.id, content);
+            if(isFetched){
+                panelValue.show = result.data.success;
+                panelValue.header = result.data.message;
+            }
+        } else {
+             // Updating panel value state
+             panelValue.show = !result.data.success;
+             panelValue.header = "Couldn't able to delete this file, please try again later!";
+             panelValue.body = result.data.success;
+             panelValue.footer = result.data.success;
+        }
+
+        populateModal(panelValue); // Populate the model with the data response!
+
+        setLoader(false); 
+
+    }
+
     // Action Items Helper Functions - Handles Download and Add version files viewer!
-    function onDownload(){
-        console.log("Download Initiated!");
+    async function onDownload(filepath){
+        console.log(filepath);
     }
 
     async function onShow(fileName, filePath){

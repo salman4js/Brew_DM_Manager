@@ -12,6 +12,7 @@ export async function loginUser(data, id, username){
     try{
         const result = await axios.post(`${url}/${id}/loginuser`, credentials);
         if(result.status === 200){
+            setStorage("permission", JSON.stringify(result.data.permission)); // Setting permissions in local storage!
             setStorage("username", username); // Setting the username in local storage!
             return result;
         }
@@ -126,6 +127,24 @@ export async function addVersion(fileName, filePath, id){
 
     try{
         const result = await axios.post("http://localhost:3200/addversion-files", data);
+        return result;
+    } catch(err){
+        if(err.response && err.response.status){
+            return err.response;
+        }
+    }
+}
+
+// Handle File Deletion!
+export async function deleteFile(file, id){
+    const URL = "https://" + id + ".ngrok.io";
+
+    const data = {
+       filePath: file
+    }
+
+    try{
+        const result = await axios.post("http://localhost:3200/deletefile", data);
         return result;
     } catch(err){
         if(err.response && err.response.status){
