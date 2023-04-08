@@ -34,6 +34,21 @@ const Univ = (props) => {
     // Temporary file data state handler!
     const [fileBlob, setFileBlob] = useState();
 
+    // Temporary file data handler for the code editor!
+    const [file, setFile] = useState({
+        fileName: undefined,
+        data: undefined
+    })
+
+    // Populate the file state handler!
+    function populateFile(modal){
+        setFile({
+            ...file,
+            fileName: modal.fileName,
+            data: modal.data
+        })
+    }
+
     // Cabinets & Explorer state handler!
     const [cabinet, setCabinet] = useState([]);
     const [cabinetData, setCabinetData] = useState([]);
@@ -96,13 +111,13 @@ const Univ = (props) => {
     const [modalInput, setModalInput] = useState();
 
     // Manu Action for all the versions of the document!
-    function menuAction(fileName, isDirectory){
+    function menuAction(fileName, isDirectory, version){
         // Initiate the menu actions!
         const menuModal = {
             show: true,
             header: "What action would you like to perform?",
             body: true,
-            bodyText: actionButton(fileName, isDirectory),
+            bodyText: actionButton(fileName, isDirectory, version),
             footer: false,
         }
 
@@ -399,7 +414,7 @@ const Univ = (props) => {
     }
 
     // Actions buttons for the add version actions!
-    function actionButton(fileName, isDirectory){
+    function actionButton(fileName, isDirectory, version){
 
         const perm = JSON.parse(getStorage("permission"));
         // Action Items!
@@ -436,14 +451,19 @@ const Univ = (props) => {
         }
 
         return(
-            <ActionItems onEditor = {(fileName, filePath) => openCodeEditor(fileName, filePath)} actionItems = {actionItems} onDelete = {(fileName, filePath) => onDelete(fileName, filePath)} onDownload = {(filePath, fileName) => onDownload(filePath, fileName)} onShow = {(fileName, filePath) => onShow(fileName, filePath)} fileName = {fileName} filePath = {content}  />
+            <ActionItems onEditor = {(fileName, filePath, version) => openCodeEditor(fileName, filePath, version)} actionItems = {actionItems} onDelete = {(fileName, filePath) => onDelete(fileName, filePath)} 
+            onDownload = {(filePath, fileName) => onDownload(filePath, fileName)} 
+            onShow = {(fileName, filePath) => onShow(fileName, filePath)} fileName = {fileName} 
+            filePath = {content} version = {version}  />
         )
     }
 
     // On code editor handler!
-    async function openCodeEditor(fileName, filePath){
+    async function openCodeEditor(fileName, filePath, version){
 
-        const getData = await getFileData(fileName, filePath);
+        const filename = version === undefined ? fileName : fileName + "--" + version;
+
+        const getData = await getFileData(filename, filePath);
 
         modal.onHide(); // Close the action modal!
 
@@ -595,6 +615,40 @@ const Univ = (props) => {
         closeEditor(); // Close the editor modal
     }
 
+    // Handle Editor Data!
+    function handleEditorData(data, fileName){
+        // Form the data into the modal and populate it!
+        const fileModal = {
+            fileName: fileName,
+            data: data
+        }
+
+        populateFile(fileModal)
+    }
+
+    // Save the text through add version content!
+    function saveText(){
+
+        const fileOldValue = editor.value.length; // Usefull to check if the file has been changed or not!
+        const modal = {
+            show: true,
+            header: "No changes have been detected",
+            body: false,
+            bodyText: undefined,
+            footer: false
+        }
+
+        if(file.data === undefined){
+            populateModal(modal);
+        } else {
+            const fileData = new File([file.data], file.fileName, {
+                type: "text/plain",
+            });
+        
+            fileData.size === fileOldValue ? populateModal(modal) : handleUpload(fileData, false);
+        }
+    }
+
     // Get the side tree data before the page renders!
     useEffect(() => {
         getCabinetData(props.id, getStorage(root.content));
@@ -631,10 +685,10 @@ const Univ = (props) => {
                                 <Sidebar height={props.windowHeight - props.footerHeight - headerHeight} root={cabinet} handleSelect={(data) => handleSelect(data)} />
                                 {
                                     editor.show ? (
-                                        <EditorView cancelEditor = {() => cancelEditor()} options = {editor} headerHeight = {(data) => setEditor({...editor, headerHeight: data})} />
+                                        <EditorView cancelEditor = {() => cancelEditor()} options = {editor} headerHeight = {(data) => setEditor({...editor, headerHeight: data})} data = {(data, fileName) => handleEditorData(data, fileName)} saveText = {() => saveText()}/>
                                     ) : (
                                         <Explorer handleDirectory={(isDirectory, folderName) => handleDirectory(isDirectory, folderName)} height={props.windowHeight - props.footerHeight - headerHeight} explorer={explorer} 
-                                        menuAction = {(fileName, isDirectory) => menuAction(fileName, isDirectory)}
+                                        menuAction = {(fileName, isDirectory, version) => menuAction(fileName, isDirectory, version)}
                                         />
                                     )
                                 }
