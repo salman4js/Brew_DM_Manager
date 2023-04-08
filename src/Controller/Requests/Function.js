@@ -175,3 +175,21 @@ export async function deleteFile(file, id){
         }
     }
 }
+
+// Get file data from the server for the code editor!
+export async function getFileData(fileName, filePath){
+    const file = filePath + "/" + fileName;
+
+    const data = { 
+        filePath: file
+    }
+    
+    try{
+        const result = await axios.post("http://localhost:3200/getfiledata", data)
+        return result;
+    } catch(err){
+        if(err.response && err.response.status){
+            return err.response;
+        }
+    }
+}
