@@ -24,12 +24,19 @@ const DocumentViewer = (props) => {
         setPageNumber(pageNumber - 1)
     }
 
+    // Editor Header Options!
+    const editorHeaderOptions = {
+        header: true,
+        controls: false,
+        page: true
+    }
+
     return (
         <div className="document-viewer-component" style={{ height: props.height + "px" }}>
             <div className="document-modal-viewer">
                 <div className="document-viewer">
                     <div>
-                        <DocumentHeader goToPrevPage = {() => goToPrevPage()} goToNextPage = {() => goToNextPage()} pageNumber = {pageNumber} numPages = {numPages} cancelViewer = {() => props.cancelViewer()} />
+                        <DocumentHeader options = {editorHeaderOptions} goToPrevPage = {() => goToPrevPage()} goToNextPage = {() => goToNextPage()} pageNumber = {pageNumber} numPages = {numPages} cancelViewer = {() => props.cancelViewer()} />
                     </div>
                     <Viewer file={props.file} onDocumentLoadSuccess = {() => onDocumentLoadSuccess()} 
                     pageNumber = {pageNumber} 

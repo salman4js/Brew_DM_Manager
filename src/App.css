@@ -318,6 +318,18 @@ body {
   background-color: #8e8f92;
 }
 
+.document-header{
+  padding-left: 30px;
+}
+
+.document-editor-control{
+  padding-right: 5px;
+}
+
+.document-header-control{
+  background-color: #3d3939;
+}
+
 .document-modal-viewer{
   padding-right: 365px;
   padding-left: 365px;
@@ -350,4 +362,8 @@ body {
 .menu-action-item{
   width: 100%;
   margin-bottom: 15px;
+}
+
+.editor-view{
+  width: calc(100% - 0px);
 }

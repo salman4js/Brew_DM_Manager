@@ -6,10 +6,11 @@ import Header from '../Main/Header/Header';
 import PanelView from '../modal.panel/modal.panel.header.view';
 import InputBox from '../modal.panel/modal.textfield.view/modal.textfield.view';
 import ActionItems from '../modal.panel/menu.action.modal/menu.action.view';
+import EditorView from '../Editor/editor.view/editor.view';
 
 // Importing Side Panel data!
 import { root } from '../Main/root/root';
-import { getData, uploadFile, createFolder, downloadFile, addVersion, deleteFile, downloadOn } from '../../Controller/Requests/Function';
+import { getData, uploadFile, createFolder, downloadFile, addVersion, deleteFile, downloadOn, getFileData } from '../../Controller/Requests/Function';
 
 // Importing storage functions!
 import { getStorage, setStorage } from '../../Controller/Storage';
@@ -47,6 +48,32 @@ const Univ = (props) => {
         file: undefined
     })
 
+    // Editor state handler!
+    const [editor, setEditor] = useState({
+        show: false,
+        header: false,
+        headerText: undefined,
+        headerHeight: undefined,
+        value: undefined,
+        height: undefined,
+        onHide: function(){
+            closeEditor();
+        }
+    })
+
+    // Close the editor modal
+    function closeEditor(){
+        setEditor({
+            ...editor,
+            show: false,
+            header: false,
+            headerText: undefined,
+            headerHeight: undefined,
+            value: undefined,
+            height: undefined
+        })
+    }
+
     // Panel State handler!
     const [modal, setModal] = useState({
         show: false,
@@ -69,14 +96,14 @@ const Univ = (props) => {
     const [modalInput, setModalInput] = useState();
 
     // Manu Action for all the versions of the document!
-    function menuAction(fileName){
+    function menuAction(fileName, isDirectory){
         // Initiate the menu actions!
         const menuModal = {
             show: true,
             header: "What action would you like to perform?",
             body: true,
-            bodyText: actionButton(fileName),
-            footer: false
+            bodyText: actionButton(fileName, isDirectory),
+            footer: false,
         }
 
         // Populate the modal!
@@ -372,16 +399,17 @@ const Univ = (props) => {
     }
 
     // Actions buttons for the add version actions!
-    function actionButton(fileName){
+    function actionButton(fileName, isDirectory){
 
         const perm = JSON.parse(getStorage("permission"));
         // Action Items!
         const actionItems = {
             buttons : true, 
+            isDirectory: isDirectory,
             btnAttr: {
                 btn1: {
                     visible: function(){
-                        if(perm.includes("Download")){
+                        if(perm.includes("Delete")){
                             return true
                         }
                     },
@@ -408,10 +436,42 @@ const Univ = (props) => {
         }
 
         return(
-            <ActionItems actionItems = {actionItems} onDelete = {(fileName, filePath) => onDelete(fileName, filePath)} onDownload = {(filePath, fileName) => onDownload(filePath, fileName)} onShow = {(fileName, filePath) => onShow(fileName, filePath)} fileName = {fileName} filePath = {content}  />
+            <ActionItems onEditor = {(fileName, filePath) => openCodeEditor(fileName, filePath)} actionItems = {actionItems} onDelete = {(fileName, filePath) => onDelete(fileName, filePath)} onDownload = {(filePath, fileName) => onDownload(filePath, fileName)} onShow = {(fileName, filePath) => onShow(fileName, filePath)} fileName = {fileName} filePath = {content}  />
         )
     }
 
+    // On code editor handler!
+    async function openCodeEditor(fileName, filePath){
+
+        const getData = await getFileData(fileName, filePath);
+
+        modal.onHide(); // Close the action modal!
+
+        const editorModal = {
+            show: true,
+            header: true,
+            headerText: fileName,
+            value: getData.data.message,
+            height: props.windowHeight - props.footerHeight - headerHeight
+        }
+
+        // Populate the editor modal!
+        populateEditor(editorModal);
+
+    }
+
+    // Populate editor modal!
+    function populateEditor(modal){
+        setEditor({
+            show: modal.show,
+            header: modal.header,
+            headerText: modal.headerText,
+            value: modal.value,
+            height: modal.height
+        })
+    }
+    
+    // On Delete handler!
     async function onDelete(fileName, filePath){
 
         setLoader(true);
@@ -530,6 +590,11 @@ const Univ = (props) => {
         )
     }
 
+    // Cancel Code editor!
+    function cancelEditor(){
+        closeEditor(); // Close the editor modal
+    }
+
     // Get the side tree data before the page renders!
     useEffect(() => {
         getCabinetData(props.id, getStorage(root.content));
@@ -564,9 +629,15 @@ const Univ = (props) => {
                             />
                             <div className="main-container">
                                 <Sidebar height={props.windowHeight - props.footerHeight - headerHeight} root={cabinet} handleSelect={(data) => handleSelect(data)} />
-                                <Explorer handleDirectory={(isDirectory, folderName) => handleDirectory(isDirectory, folderName)} height={props.windowHeight - props.footerHeight - headerHeight} explorer={explorer} 
-                                menuAction = {(fileName) => menuAction(fileName)}
-                                />
+                                {
+                                    editor.show ? (
+                                        <EditorView cancelEditor = {() => cancelEditor()} options = {editor} headerHeight = {(data) => setEditor({...editor, headerHeight: data})} />
+                                    ) : (
+                                        <Explorer handleDirectory={(isDirectory, folderName) => handleDirectory(isDirectory, folderName)} height={props.windowHeight - props.footerHeight - headerHeight} explorer={explorer} 
+                                        menuAction = {(fileName, isDirectory) => menuAction(fileName, isDirectory)}
+                                        />
+                                    )
+                                }
                             </div>
                         </div>
                     )
