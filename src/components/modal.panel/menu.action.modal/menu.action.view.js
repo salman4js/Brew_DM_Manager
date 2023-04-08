@@ -11,7 +11,7 @@ const ActionItems = (props) => {
                 )}
                 <div className="menu-action-item btn btn-light" onClick={() => props.onShow(props.fileName, props.filePath)}>{props.actionItems.btnAttr.btn2}</div>
                 {props.actionItems.btnAttr.btn3.visible() && (
-                    <div className="menu-action-item btn btn-light" onClick={() => props.onEditor(props.fileName, props.filePath)}>{props.actionItems.btnAttr.btn3.text}</div>
+                    <div className="menu-action-item btn btn-light" onClick={() => props.onEditor(props.fileName, props.filePath, props.version)}>{props.actionItems.btnAttr.btn3.text}</div>
                 )}
                 {props.actionItems.btnAttr.btn4.visible() && (
                     <div className="menu-action-item btn btn-light" onClick={() => props.onDelete(props.fileName, props.filePath)}>{props.actionItems.btnAttr.btn4.text}</div>

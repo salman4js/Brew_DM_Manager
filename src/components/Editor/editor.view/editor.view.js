@@ -15,7 +15,7 @@ const EditorView = (props) => {
     return (
         <div style = {{width : "100%"}}>
             <EditorHeader options = {editorHeaderOptions} headerHeight = {(data) => props.headerHeight(data) } cancelEditor = {() => props.cancelEditor()} />
-            <Editor options = {props.options} />
+            <Editor options = {props.options} data = {(data, fileName) => props.data(data, props.options.headerText)} saveText = {() => props.saveText()} />
         </div>
     )
 }
