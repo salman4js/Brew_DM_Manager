@@ -1,6 +1,6 @@
 import { getStorage, setStorage } from '../Storage';
 import axios from 'axios';
-const url = "http://localhost:3002"
+const url = "https://brew-dm-controller.netlify.app/.netlify/functions/server"
 
 // Login User Handler!
 export async function loginUser(data, id, username){
