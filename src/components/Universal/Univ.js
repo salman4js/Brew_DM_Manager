@@ -463,7 +463,7 @@ const Univ = (props) => {
 
         const filename = version === undefined ? fileName : fileName + "--" + version;
 
-        const getData = await getFileData(filename, filePath);
+        const getData = await getFileData(filename, filePath, props.id);
 
         modal.onHide(); // Close the action modal!
 

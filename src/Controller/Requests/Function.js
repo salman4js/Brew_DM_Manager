@@ -27,14 +27,14 @@ export async function loginUser(data, id, username){
 export async function getData(id, path){
    
     // Make Up the ID!
-    const URL = "https://" + id + ".ngrok.io"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
+    const URL = "https://" + id + ".ngrok-free.app"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
     
     // Form Required Data!
     const data = {
         folder: path
     }
     try{
-        const result = await axios.post("http://localhost:3200/folders", data);
+        const result = await axios.post(`${URL}/folders`, data);
         return result;
 
     } catch(err){
@@ -49,7 +49,7 @@ export async function uploadFile(data, path, id, addVersion){
 
     let getUsername = getStorage("username");
 
-    const URL = "https://" + id + ".ngrok.io"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
+    const URL = "https://" + id + ".ngrok-free.app"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
     const pathName = path.substring(path.indexOf("/") + 1) + "/" // Adding "/" as the path identifier for the server to upload the documents!
 
     // Form Data with PathName
@@ -62,11 +62,11 @@ export async function uploadFile(data, path, id, addVersion){
     try{
         if(addVersion){
             // Upload the file to the server!
-            const result = await axios.post("http://localhost:3200/addversion-fileupload", uploadFile);
+            const result = await axios.post(`${URL}/addversion-fileupload`, uploadFile);
             return result;
         } else {
             // Upload the file to the server!
-            const result = await axios.post("http://localhost:3200/upload", uploadFile);
+            const result = await axios.post(`${URL}/upload`, uploadFile);
             return result;
         }
     } catch(err){
@@ -79,7 +79,7 @@ export async function uploadFile(data, path, id, addVersion){
 // Create a folder in the destination path!
 export async function createFolder(pathName, id){
 
-    const URL = "https://" + id + ".ngrok.io"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
+    const URL = "https://" + id + ".ngrok-free.app"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
     
     // Create a data!
     const data = {
@@ -87,7 +87,7 @@ export async function createFolder(pathName, id){
     }
     
     try{
-        const result = await axios.post("http://localhost:3200/createfolder", data)
+        const result = await axios.post(`${URL}/createfolder`, data)
         return result;
     } catch(err){
         if(err.response && err.response.status){
@@ -99,14 +99,14 @@ export async function createFolder(pathName, id){
 // Handle file download from the server for the viewer!
 export async function downloadFile(filePath, id){
 
-    const URL = "https://" + id + ".ngrok.io";
+    const URL = "https://" + id + ".ngrok-free.app";
 
     const data = {
         filePath: filePath
     }
 
     try{
-        const result = await axios.post("http://localhost:3200/download", data);
+        const result = await axios.post(`${URL}/download`, data);
         return result;
     } catch(err){
         if(err.response && err.response.status){
@@ -116,14 +116,14 @@ export async function downloadFile(filePath, id){
 }
 
 export async function downloadOn(filePath, id){
-    const URL = "https://" + id + ".ngrok.io";
+    const URL = "https://" + id + ".ngrok-free.app";
 
     const data = {
         filePath: filePath
     }
 
     try{
-        const result = await fetch("http://localhost:3200/download", {
+        const result = await fetch(`${URL}/download`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
@@ -141,7 +141,7 @@ export async function downloadOn(filePath, id){
 // Handle Add Version File Viewer!
 export async function addVersion(fileName, filePath, id){
 
-    const URL = "https://" + id + ".ngrok.io";
+    const URL = "https://" + id + ".ngrok-free.app";
 
     const data = {
         fileName: fileName,
@@ -149,7 +149,7 @@ export async function addVersion(fileName, filePath, id){
     }
 
     try{
-        const result = await axios.post("http://localhost:3200/addversion-files", data);
+        const result = await axios.post(`${URL}/addversion-files`, data);
         return result;
     } catch(err){
         if(err.response && err.response.status){
@@ -160,14 +160,14 @@ export async function addVersion(fileName, filePath, id){
 
 // Handle File Deletion!
 export async function deleteFile(file, id){
-    const URL = "https://" + id + ".ngrok.io";
+    const URL = "https://" + id + ".ngrok-free.app";
 
     const data = {
        filePath: file
     }
 
     try{
-        const result = await axios.post("http://localhost:3200/deletefile", data);
+        const result = await axios.post(`${URL}/deletefile`, data);
         return result;
     } catch(err){
         if(err.response && err.response.status){
@@ -177,7 +177,10 @@ export async function deleteFile(file, id){
 }
 
 // Get file data from the server for the code editor!
-export async function getFileData(fileName, filePath){
+export async function getFileData(fileName, filePath, id){
+
+    const URL = "https://" + id + ".ngrok-free.app";
+
     const file = filePath + "/" + fileName;
 
     const data = { 
@@ -185,7 +188,7 @@ export async function getFileData(fileName, filePath){
     }
     
     try{
-        const result = await axios.post("http://localhost:3200/getfiledata", data)
+        const result = await axios.post(`${URL}/getfiledata`, data)
         return result;
     } catch(err){
         if(err.response && err.response.status){
