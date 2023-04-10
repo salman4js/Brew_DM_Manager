@@ -424,7 +424,7 @@ const Univ = (props) => {
             btnAttr: {
                 btn1: {
                     visible: function(){
-                        if(perm.includes("Delete")){
+                        if(perm.includes("Download")){
                             return true
                         }
                     },
@@ -433,7 +433,7 @@ const Univ = (props) => {
                 btn2: "Show all versions",
                 btn3: {
                     visible: function(){    
-                        if(perm.includes("Delete")){
+                        if(perm.includes("Edit")){
                             return true
                         }
                     },
