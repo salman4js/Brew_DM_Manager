@@ -1,6 +1,12 @@
 import { getStorage, setStorage } from '../Storage';
 import axios from 'axios';
-const url = "https://brew-dm-controller.netlify.app/.netlify/functions/server"
+const url = "https://brew-dm-controller.netlify.app/.netlify/functions/server";
+
+var localController = "http://localhost:3002"
+
+var localDataServer = "http://localhost:3200"
+
+var localURL = "https://tasty-geckos-like-157-50-37-152.loca.lt";
 
 // Login User Handler!
 export async function loginUser(data, id, username){
@@ -27,6 +33,7 @@ export async function loginUser(data, id, username){
 export async function getData(id, path){
    
     // Make Up the ID!
+    const testUrl = "http://127.0.0.1:4040"
     const URL = "https://" + id + ".ngrok-free.app"; // Cannot use this with localhost:3000 as localhost have cors issue policy enabled!
     
     // Form Required Data!
@@ -34,7 +41,7 @@ export async function getData(id, path){
         folder: path
     }
     try{
-        const result = await axios.post(`${URL}/folders`, data);
+        const result = await axios.post(`${localURL}/folders`, data);
         return result;
 
     } catch(err){
@@ -62,11 +69,11 @@ export async function uploadFile(data, path, id, addVersion){
     try{
         if(addVersion){
             // Upload the file to the server!
-            const result = await axios.post(`${URL}/addversion-fileupload`, uploadFile);
+            const result = await axios.post(`${localURL}/addversion-fileupload`, uploadFile);
             return result;
         } else {
             // Upload the file to the server!
-            const result = await axios.post(`${URL}/upload`, uploadFile);
+            const result = await axios.post(`${localURL}/upload`, uploadFile);
             return result;
         }
     } catch(err){
@@ -87,7 +94,7 @@ export async function createFolder(pathName, id){
     }
     
     try{
-        const result = await axios.post(`${URL}/createfolder`, data)
+        const result = await axios.post(`${localURL}/createfolder`, data)
         return result;
     } catch(err){
         if(err.response && err.response.status){
@@ -106,7 +113,7 @@ export async function downloadFile(filePath, id){
     }
 
     try{
-        const result = await axios.post(`${URL}/download`, data);
+        const result = await axios.post(`${localURL}/download`, data);
         return result;
     } catch(err){
         if(err.response && err.response.status){
@@ -123,7 +130,7 @@ export async function downloadOn(filePath, id){
     }
 
     try{
-        const result = await fetch(`${URL}/download`, {
+        const result = await fetch(`${localURL}/download`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
@@ -149,7 +156,7 @@ export async function addVersion(fileName, filePath, id){
     }
 
     try{
-        const result = await axios.post(`${URL}/addversion-files`, data);
+        const result = await axios.post(`${localURL}/addversion-files`, data);
         return result;
     } catch(err){
         if(err.response && err.response.status){
@@ -167,7 +174,7 @@ export async function deleteFile(file, id){
     }
 
     try{
-        const result = await axios.post(`${URL}/deletefile`, data);
+        const result = await axios.post(`${localURL}/deletefile`, data);
         return result;
     } catch(err){
         if(err.response && err.response.status){
@@ -188,7 +195,7 @@ export async function getFileData(fileName, filePath, id){
     }
     
     try{
-        const result = await axios.post(`${URL}/getfiledata`, data)
+        const result = await axios.post(`${localURL}/getfiledata`, data)
         return result;
     } catch(err){
         if(err.response && err.response.status){
