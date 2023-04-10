@@ -16,7 +16,7 @@ export async function loginUser(data, id, username){
         password: data
     }
     try{
-        const result = await axios.post(`${url}/${id}/loginuser`, credentials);
+        const result = await axios.post(`${localController}/${id}/loginuser`, credentials);
         if(result.status === 200){
             setStorage("permission", JSON.stringify(result.data.permission)); // Setting permissions in local storage!
             setStorage("username", username); // Setting the username in local storage!
@@ -41,7 +41,7 @@ export async function getData(id, path){
         folder: path
     }
     try{
-        const result = await axios.post(`${localURL}/folders`, data);
+        const result = await axios.post(`${localDataServer}/folders`, data);
         return result;
 
     } catch(err){
@@ -69,11 +69,11 @@ export async function uploadFile(data, path, id, addVersion){
     try{
         if(addVersion){
             // Upload the file to the server!
-            const result = await axios.post(`${localURL}/addversion-fileupload`, uploadFile);
+            const result = await axios.post(`${localDataServer}/addversion-fileupload`, uploadFile);
             return result;
         } else {
             // Upload the file to the server!
-            const result = await axios.post(`${localURL}/upload`, uploadFile);
+            const result = await axios.post(`${localDataServer}/upload`, uploadFile);
             return result;
         }
     } catch(err){
@@ -94,7 +94,7 @@ export async function createFolder(pathName, id){
     }
     
     try{
-        const result = await axios.post(`${localURL}/createfolder`, data)
+        const result = await axios.post(`${localDataServer}/createfolder`, data)
         return result;
     } catch(err){
         if(err.response && err.response.status){
@@ -113,7 +113,7 @@ export async function downloadFile(filePath, id){
     }
 
     try{
-        const result = await axios.post(`${localURL}/download`, data);
+        const result = await axios.post(`${localDataServer}/download`, data);
         return result;
     } catch(err){
         if(err.response && err.response.status){
@@ -130,7 +130,7 @@ export async function downloadOn(filePath, id){
     }
 
     try{
-        const result = await fetch(`${localURL}/download`, {
+        const result = await fetch(`${localDataServer}/download`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
@@ -156,7 +156,7 @@ export async function addVersion(fileName, filePath, id){
     }
 
     try{
-        const result = await axios.post(`${localURL}/addversion-files`, data);
+        const result = await axios.post(`${localDataServer}/addversion-files`, data);
         return result;
     } catch(err){
         if(err.response && err.response.status){
@@ -174,7 +174,7 @@ export async function deleteFile(file, id){
     }
 
     try{
-        const result = await axios.post(`${localURL}/deletefile`, data);
+        const result = await axios.post(`${localDataServer}/deletefile`, data);
         return result;
     } catch(err){
         if(err.response && err.response.status){
@@ -195,7 +195,7 @@ export async function getFileData(fileName, filePath, id){
     }
     
     try{
-        const result = await axios.post(`${localURL}/getfiledata`, data)
+        const result = await axios.post(`${localDataServer}/getfiledata`, data)
         return result;
     } catch(err){
         if(err.response && err.response.status){
